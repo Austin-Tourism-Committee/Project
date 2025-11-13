@@ -75,6 +75,11 @@
       <option value="basemap_gallery.html">Basemap Gallery</option>
     </select>
   </div>
+
+  <hr>
+<h4>Toggle Layers</h4>
+<div id="layerToggles"></div>
+
 </div>
 
 <!-- Bottom-right controls for building queries -->
@@ -116,7 +121,6 @@
 
 <script>
 require([
-  // Load required ArcGIS modules
   "esri/Map",
   "esri/views/MapView",
   "esri/layers/FeatureLayer",
@@ -128,87 +132,154 @@ require([
   "dojo/_base/array"
 ], function(Map, MapView, FeatureLayer, GraphicsLayer, QueryTask, Query, dom, on, arrayUtils){
 
-  // 1. Create the map with a base map style
+  // ----------------------------------------
+  // 1. MAP + VIEW
+  // ----------------------------------------
   const map = new Map({
     basemap: "streets-navigation-vector"
   });
 
-  // 2. Create the view (map display), centered on the continental US
   const view = new MapView({
-    container: "viewDiv", // Div to display map
+    container: "viewDiv",
     map: map,
-    center: [-98.5795, 39.8283], // Longitude, latitude of US center
-    zoom: 4.5 // Zoom level to show most of the US
+    center: [-98.5795, 39.8283],
+    zoom: 4.5
   });
 
-  // 3. URL to the census housing FeatureLayer
-  const layerUrl = "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Census_Tracts_Housing_Year_Built/FeatureServer/0";
-
-  // 4. Create a FeatureLayer for the census tracts
-  const censusLayer = new FeatureLayer({
-    url: layerUrl,
-    outFields: ["*"], // Pull all attributes
-    popupTemplate: { // Configure popup to display info when clicked
-      title: "Census Tract Info",
-      content: `<b>Percent Housing Units Built 1939 or Earlier:</b> {HUs_percent_before_1940}<br>
-          <b>ACS Median Year Structure Built (HUs):</b> {ACSMEDYBLT}`
+  // ----------------------------------------
+  // 2. DEFINE ALL YOUR LAYERS HERE
+  // ----------------------------------------
+  const layersInfo = [
+    {
+      name: "Cities Violent Per 2019",
+      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/1"
+    },
+    {
+      name: "Cities Violent Per 2009",
+      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/2"
+    },
+    {
+      name: "Texas Cities 2019 OptimizedHotSpotAnalysis",
+      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/3"
+    },
+    {
+      name: "Texas Cities 2009 OptimizedHotSpotAnalysis",
+      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/4"
+    },
+    {
+      name: "Texas Cities 2019 HotSpots",
+      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/5"
+    },
+    {
+      name: "Texas Cities 2009 HotSpots",
+      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/6"
+    },
+    {
+      name: "Texas Cities 2019",
+      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/7"
+    },
+    {
+      name: "Texas Cities 2009",
+      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/8"
+    },
+    {
+      name: "State Boundary",
+      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/9"
     }
-  });
-  map.add(censusLayer); // Add the census layer to the map
+  ];
 
-  // 5. Create a GraphicsLayer to display query results
+  // (If you send me the URLs I will fill these for you automatically.)
+
+  // ----------------------------------------
+  // 3. LOAD THE LAYERS AND ADD TO MAP
+  // ----------------------------------------
+  const layerObjects = [];
+
+  layersInfo.forEach((info, idx) => {
+    const fl = new FeatureLayer({
+      url: info.url,
+      visible: true,
+      id: "layer_" + idx,
+      title: info.name
+    });
+
+    map.add(fl);
+    layerObjects.push(fl);
+  });
+
+  // ----------------------------------------
+  // 4. AUTO-GENERATE CHECKBOXES FOR LAYERS
+  // ----------------------------------------
+  const layerToggleContainer = document.getElementById("layerToggles");
+
+  layerObjects.forEach((layer, index) => {
+    const div = document.createElement("div");
+
+    div.innerHTML = `
+      <label>
+        <input type="checkbox" id="layerToggle_${index}" checked>
+        ${layer.title}
+      </label>
+    `;
+
+    layerToggleContainer.appendChild(div);
+
+    // Bind checkbox → visibility toggle
+    document.getElementById(`layerToggle_${index}`)
+      .addEventListener("change", (e) => {
+        layer.visible = e.target.checked;
+      });
+  });
+
+  // ----------------------------------------
+  // 5. KEEP YOUR ORIGINAL QUERY CODE INTACT
+  // ----------------------------------------
+
+  // Use your crime layer for querying (first one for example)
+  const layerUrl = layersInfo[0].url;
+
   const resultsLayer = new GraphicsLayer();
   map.add(resultsLayer);
 
-  // 6. Set up a QueryTask for querying the FeatureLayer
   const qTask = new QueryTask({ url: layerUrl });
 
-  // Query parameters: return geometry (to display on map) and all attributes
   const qParams = new Query({
     returnGeometry: true,
     outFields: ["*"]
   });
 
-  // 7. Function to run the query based on user input
   function doQuery(){
-    // Clear any previous query results
     resultsLayer.removeAll();
 
-    // Get values from the dropdowns and input
-    const attribute = dom.byId("attSelect").value; // e.g., HUs_percent_before_1940
-    const operator = dom.byId("signSelect").value; // e.g., >
-    const value = dom.byId("valSelect").value; // e.g., 50
+    const attribute = dom.byId("attSelect").value;
+    const operator = dom.byId("signSelect").value;
+    const value = dom.byId("valSelect").value;
 
-    // Build the SQL "where" clause for the query
     qParams.where = `${attribute} ${operator} ${value}`;
 
-    // Execute the query
     qTask.execute(qParams).then(function(res){
-      // If no results found, print a message
       if(res.features.length === 0){
         dom.byId("printResults").innerHTML = "No results found!";
         return;
       }
 
-      // Assign popupTemplate to each feature so popup works on results
       arrayUtils.forEach(res.features, function(f){
-        f.popupTemplate = censusLayer.popupTemplate;
+        f.popupTemplate = {
+          title: "Query Result",
+          content: `{${attribute}}`
+        };
       });
 
-      // Add the results to the map
       resultsLayer.addMany(res.features);
 
-      // Zoom to the query results and open the popup
       view.goTo(res.features).then(function(){
         view.popup.open({ features: res.features });
       });
 
-      // Display how many results were found
       dom.byId("printResults").innerHTML = res.features.length + " results found!";
-    }).catch(err => console.error("Query failed:", err)); // Log errors if query fails
+    }).catch(err => console.error("Query failed:", err));
   }
 
-  // 8. Attach the query function to the button click
   on(dom.byId("doBtn"), "click", doQuery);
 
 });
