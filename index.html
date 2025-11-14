@@ -1,144 +1,282 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Test Project Page</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <title>Texas Crime</title>
+
+  <!-- ArcGIS CSS for styling the map and widgets -->
   <link rel="stylesheet" href="https://js.arcgis.com/4.21/esri/themes/light/main.css"/>
 
-<!--Stylesheet to format menu and add title/footer-->
+  <!-- ArcGIS JS API for working with maps, layers, and queries -->
+  <script src="https://js.arcgis.com/4.21/"></script>
+
   <style>
+    /* Set the map to take up the full page */
     html, body, #viewDiv {
-      padding: 0;
-      margin: 0;
       height: 100%;
-      width: 100%;
+      margin: 0;
+      padding: 0;
     }
 
-    #menu {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 1000;
-    }
-
-    #menuButton {
-      background-color: white;
-      border: none;
-      padding: 10px 15px;
-      cursor: pointer;
-      font-weight: bold;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-
-    #dropdown {
-      display: none;
-      position: absolute;
-      right: 0;
-      background-color: white;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    #dropdown a {
-      display: block;
-      padding: 8px 12px;
-      text-decoration: none;
-      color: black;
-      font-size: 14px;
-    }
-
-    #dropdown a:hover {
-      background-color: #f0f0f0;
-    }
-    #pageTitle {
+    /* Controls container at the top-left corner of the map */
+    #controls {
       position: absolute;
       top: 10px;
       left: 10px;
-      background-color: rgba(255, 255, 255, 0.8);
-      padding: 10px 15px;
-    border-radius: 8px;
-    font-size: 20px;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    z-index: 1000;
-  }
+      background: white;
+      padding: 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      z-index: 10;
+      width: 220px;
+    }
 
-  #footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: rgba(255, 255, 255, 0.7);
-    text-align: center;
-    padding: 5px 0;
-    font-size: 12px;
-    z-index: 500;
-  }
+    /* Options container at the bottom-right corner for query inputs */
+    #optionsDiv {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      padding: 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+
+    /* Footer centered at the bottom of the map */
+    #footer {
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%); /* Centers the footer horizontally */
+      background-color: rgba(255,255,255,0.8); /* Semi-transparent background */
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      text-align: center;
+    }
   </style>
 </head>
-
 <body>
-  <div id="viewDiv"></div>
 
-<!--Adds page title-->
-   <div id="pageTitle">Lab 7 Homework: U.S. Interstates Map</div>
-
-<!--Links and map names in menu-->
-  <div id="menu">
-    <button id="menuButton">Available Maps</button>
-    <div id="dropdown">
-      <a href="https://99randomtest.github.io/99randomtest/simple_mapping.html" target="_blank">Simple Mapping</a>
-      <a href="https://99randomtest.github.io/99randomtest/tile_layer.html" target="_blank">Tile Layer</a>
-      <a href="https://99randomtest.github.io/99randomtest/dynamic_layers.html" target="_blank">Dynamic Layers</a>
-      <a href="https://99randomtest.github.io/99randomtest/on_event.html" target="_blank">On Event</a>
-      <a href="https://99randomtest.github.io/99randomtest/basemap_gallery.html" target="_blank">Basemap Gallery</a>
-      <a href="https://99randomtest.github.io/99randomtest/query_task.html" target="_blank">Query Task</a>
-    </div>
+<!-- Top-left controls for navigation to other map pages -->
+<div id="controls">
+  <h3>Texas Crime Change 2009-2019</h3>
+  <div id="navMenu">
+    <label for="pageSelect">Open another map:</label>
+    <select id="pageSelect" onchange="if(this.value) window.open(this.value,'_blank')">
+      <option value="">Select a page</option>
+      <option value="tile_layer.html">Tile Layer</option>
+      <option value="simple_mapping.html">Simple Mapping</option>
+      <option value="query_task.html">Query Task</option>
+      <option value="on_event.html">On Event</option>
+      <option value="dynamic_layers.html">Dynamic Layers</option>
+      <option value="basemap_gallery.html">Basemap Gallery</option>
+    </select>
   </div>
 
-<!--Adds copyright footer-->
-  <div id="footer">&copy; 2025 Tile and Feature Layer Derived from Esri REST Service</div>
+  <hr>
+<h4>Toggle Layers</h4>
+<div id="layerToggles"></div>
 
-<!--ArcGIS javascript formatting source-->
-  <script src="https://js.arcgis.com/4.21/"></script>
+</div>
 
-<!--Esri map, tile, and feature service script, sets the webmap/view/interstates layer-->
-  <script>
-    require(["esri/Map", "esri/views/MapView", "esri/layers/TileLayer", "esri/layers/FeatureLayer"],
-    function (Map, MapView, TileLayer, FeatureLayer) {
+<!-- Bottom-right controls for building queries -->
+<div id="optionsDiv">
+  <!-- Dropdown to select which attribute to query -->
+  <label for="attSelect">Attribute:</label>
+  <select id="attSelect">
+    <option value="HUs_percent_before_1940">Percent Housing Units Built 1939 or Earlier</option>
+    <option value="ACSMEDYBLT">ACS Median Year Structure Built (HUs)</option>
+  </select>
+  <br><br>
 
-      var USInterstates = new FeatureLayer({
-        url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/USInterstates/FeatureServer/0"
-      });
+  <!-- Dropdown to select the operator for comparison -->
+  <label for="signSelect">Operator:</label>
+  <select id="signSelect">
+    <option value="&gt;">is greater than</option>
+    <option value="&lt;">is less than</option>
+    <option value="=">is equal to</option>
+  </select>
+  <br><br>
 
-      var map = new Map({
-        basemap: "topo-vector",
-        layers: [USInterstates]
-      });
+  <!-- Input for the value to compare against -->
+  <label for="valSelect">Value:</label>
+  <input type="number" id="valSelect" value="50">
+  <br><br>
 
-      var view = new MapView({
-        container: "viewDiv",
-        map: map,
-        zoom: 5,
-        center: [-98, 39]
-      });
+  <!-- Button to run the query -->
+  <button id="doBtn">Run Query</button>
+
+  <!-- Paragraph to print the number of results found -->
+  <p id="printResults"></p>
+</div>
+
+<!-- The div that will contain the ArcGIS map -->
+<div id="viewDiv"></div>
+
+<!-- Footer with credit and data source -->
+<div id="footer">&copy; 2025 Parker Cook | Data source: ESRI Census Housing Year Built</div>
+
+<script>
+require([
+  "esri/Map",
+  "esri/views/MapView",
+  "esri/layers/FeatureLayer",
+  "esri/layers/GraphicsLayer",
+  "esri/tasks/QueryTask",
+  "esri/tasks/support/Query",
+  "dojo/dom",
+  "dojo/on",
+  "dojo/_base/array"
+], function(Map, MapView, FeatureLayer, GraphicsLayer, QueryTask, Query, dom, on, arrayUtils){
+
+  // ----------------------------------------
+  // 1. MAP + VIEW
+  // ----------------------------------------
+  const map = new Map({
+    basemap: "streets-navigation-vector"
+  });
+
+  const view = new MapView({
+    container: "viewDiv",
+    map: map,
+    center: [-98.5795, 39.8283],
+    zoom: 4.5
+  });
+
+  // ----------------------------------------
+  // 2. DEFINE ALL YOUR LAYERS HERE
+  // ----------------------------------------
+  const layersInfo = [
+    {
+      name: "State Boundary",
+      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/9"
+    },
+    {
+      name: "Texas Cities 2009",
+      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/8"
+    },
+    {
+      name: "Texas Cities 2019",
+      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/7"
+    },
+    {
+      name: "Texas Cities 2009 OptimizedHotSpotAnalysis",
+      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/4"
+    },
+    {
+      name: "Texas Cities 2019 OptimizedHotSpotAnalysis",
+      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/3"
+    },
+    {
+      name: "Cities Violent Per 2009",
+      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/2"
+    },
+    {
+      name: "Cities Violent Per 2019",
+      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/1"
+    }
+  ];
+
+  // (If you send me the URLs I will fill these for you automatically.)
+
+  // ----------------------------------------
+  // 3. LOAD THE LAYERS AND ADD TO MAP
+  // ----------------------------------------
+  const layerObjects = [];
+
+  layersInfo.forEach((info, idx) => {
+    const fl = new FeatureLayer({
+      url: info.url,
+      visible: true,
+      id: "layer_" + idx,
+      title: info.name
     });
-//ArcGIS JS script to create menubutton
-    const menuButton = document.getElementById("menuButton");
-    const dropdown = document.getElementById("dropdown");
 
-    menuButton.addEventListener("click", function() {
-      dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
-    });
+    map.add(fl);
+    layerObjects.push(fl);
+  });
 
-    window.addEventListener("click", function(e) {
-      if (!menuButton.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.style.display = "none";
+  // ----------------------------------------
+  // 4. AUTO-GENERATE CHECKBOXES FOR LAYERS
+  // ----------------------------------------
+  const layerToggleContainer = document.getElementById("layerToggles");
+
+  layerObjects.forEach((layer, index) => {
+    const div = document.createElement("div");
+
+    div.innerHTML = `
+      <label>
+        <input type="checkbox" id="layerToggle_${index}" checked>
+        ${layer.title}
+      </label>
+    `;
+
+    layerToggleContainer.appendChild(div);
+
+    // Bind checkbox → visibility toggle
+    document.getElementById(`layerToggle_${index}`)
+      .addEventListener("change", (e) => {
+        layer.visible = e.target.checked;
+      });
+  });
+
+  // ----------------------------------------
+  // 5. KEEP YOUR ORIGINAL QUERY CODE INTACT
+  // ----------------------------------------
+
+  // Use your crime layer for querying (first one for example)
+  const layerUrl = layersInfo[0].url;
+
+  const resultsLayer = new GraphicsLayer();
+  map.add(resultsLayer);
+
+  const qTask = new QueryTask({ url: layerUrl });
+
+  const qParams = new Query({
+    returnGeometry: true,
+    outFields: ["*"]
+  });
+
+  function doQuery(){
+    resultsLayer.removeAll();
+
+    const attribute = dom.byId("attSelect").value;
+    const operator = dom.byId("signSelect").value;
+    const value = dom.byId("valSelect").value;
+
+    qParams.where = `${attribute} ${operator} ${value}`;
+
+    qTask.execute(qParams).then(function(res){
+      if(res.features.length === 0){
+        dom.byId("printResults").innerHTML = "No results found!";
+        return;
       }
-    });
-  </script>
+
+      arrayUtils.forEach(res.features, function(f){
+        f.popupTemplate = {
+          title: "Query Result",
+          content: `{${attribute}}`
+        };
+      });
+
+      resultsLayer.addMany(res.features);
+
+      view.goTo(res.features).then(function(){
+        view.popup.open({ features: res.features });
+      });
+
+      dom.byId("printResults").innerHTML = res.features.length + " results found!";
+    }).catch(err => console.error("Query failed:", err));
+  }
+
+  on(dom.byId("doBtn"), "click", doQuery);
+
+});
+</script>
+
 </body>
+</html>
 </html>
