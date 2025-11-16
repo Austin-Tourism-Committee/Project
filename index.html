@@ -84,11 +84,11 @@
 
 <!-- Bottom-right controls for building queries -->
 <div id="optionsDiv">
-  <!-- Dropdown to select which attribute to query -->
-  <label for="attSelect">Attribute:</label>
+  <!-- Kai- Set query to look at violent crime amounts -->
+  <label for="attSelect">2019 Crime Data:</label>
   <select id="attSelect">
-    <option value="HUs_percent_before_1940">Percent Housing Units Built 1939 or Earlier</option>
-    <option value="ACSMEDYBLT">ACS Median Year Structure Built (HUs)</option>
+    <option value="ViolentPer1000">Violent Crime Per 1000 Population</option>
+    <option value="ViolentInt">Total Violent Crime </option>
   </select>
   <br><br>
 
@@ -103,7 +103,7 @@
 
   <!-- Input for the value to compare against -->
   <label for="valSelect">Value:</label>
-  <input type="number" id="valSelect" value="50">
+  <input type="number" id="valSelect" value="5">
   <br><br>
 
   <!-- Button to run the query -->
@@ -219,8 +219,8 @@ require([
   // 5. KEEP YOUR ORIGINAL QUERY CODE INTACT
   // ----------------------------------------
 
-  // Use your crime layer for querying (first one for example)
-  const layerUrl = layersInfo[0].url;
+  // Kai- set to only look at 2019 crime layer
+  const layerUrl = layersInfo[4].url;
 
   const resultsLayer = new GraphicsLayer();
   map.add(resultsLayer);
@@ -231,7 +231,7 @@ require([
     returnGeometry: true,
     outFields: ["*"]
   });
-
+  
   function doQuery(){
     resultsLayer.removeAll();
 
@@ -270,6 +270,5 @@ require([
 </script>
 
 </body>
-</html>
 </html>
 </html>
