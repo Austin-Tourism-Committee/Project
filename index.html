@@ -5,9 +5,7 @@
   <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no"/>
   <title>Texas Crime</title>
 
-  <!-- ArcGIS CSS -->
   <link rel="stylesheet" href="https://js.arcgis.com/4.21/esri/themes/light/main.css"/>
-  <!-- ArcGIS JS API -->
   <script src="https://js.arcgis.com/4.21/"></script>
 
   <style>
@@ -15,7 +13,9 @@
       height: 100%;
       margin: 0;
       padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
     }
+
     #controls {
       position: absolute;
       top: 10px;
@@ -27,16 +27,48 @@
       z-index: 10;
       width: 220px;
     }
-    #optionsDiv {
+
+    #bufferPanel2009, #bufferPanel2019 {
       position: absolute;
-      bottom: 20px;
-      right: 20px;
+      top: 10px;
+      right: 10px;
       background: white;
       padding: 10px;
       border-radius: 6px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.3);
       z-index: 10;
+      width: 220px;
     }
+
+    #bufferPanel2019 {
+      top: 225px;
+    }
+
+    #quickBuffer2009 {
+      position: absolute;
+      top: 440px;
+      right: 10px;
+      background: white;
+      padding: 10px;
+      border-radius: 6px;
+      width: 220px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+
+    /* Query Panel */
+    #queryPanel {
+      position: absolute;
+      top: 660px;
+      right: 10px;
+      background: white;
+      padding: 10px;
+      border-radius: 6px;
+      width: 220px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+
     #footer {
       position: absolute;
       bottom: 5px;
@@ -54,33 +86,50 @@
 
 <div id="controls">
   <h3>Texas Crime Change 2009-2019</h3>
-
-  <label for="pageSelect">Open another map:</label>
-  <select id="pageSelect" onchange="if(this.value) window.open(this.value,'_blank')">
-    <option value="">Select a page</option>
-    <option value="tile_layer.html">Tile Layer</option>
-    <option value="simple_mapping.html">Simple Mapping</option>
-    <option value="query_task.html">Query Task</option>
-    <option value="on_event.html">On Event</option>
-    <option value="dynamic_layers.html">Dynamic Layers</option>
-    <option value="basemap_gallery.html">Basemap Gallery</option>
-  </select>
-
-  <hr>
   <h4>Toggle Layers</h4>
   <div id="layerToggles"></div>
 </div>
 
-<!-- Crime Query Panel -->
-<div id="optionsDiv">
-  <label for="attSelect">2019 Crime Data:</label>
+<!-- 2009 Buffer Panel -->
+<div id="bufferPanel2009">
+  <h4>2009 — Crime Buffer</h4>
+  <label>ViolentPer1000 ≥ <input id="vp2009" type="number" value="5"></label><br>
+  <label>Distance (miles): <input id="dist2009" type="number" value="25"></label><br>
+  <button id="buffer2009Btn">Draw Buffers</button>
+  <button id="clear2009Btn">Clear Buffers</button>
+  <p id="print2009" style="font-size:12px;margin-top:6px"></p>
+</div>
+
+<!-- 2019 Buffer Panel -->
+<div id="bufferPanel2019">
+  <h4>2019 — Crime Buffer</h4>
+  <label>ViolentPer1000 ≥ <input id="vp2019" type="number" value="5"></label><br>
+  <label>Distance (miles): <input id="dist2019" type="number" value="25"></label><br>
+  <button id="buffer2019Btn">Draw Buffers</button>
+  <button id="clear2019Btn">Clear Buffers</button>
+  <p id="print2019" style="font-size:12px;margin-top:6px"></p>
+</div>
+
+<!-- Fast Buffer Panel -->
+<div id="quickBuffer2009">
+  <h4>Fast Buffer (5 Cities)</h4>
+  <button id="runFast2009">Run Fast Buffer</button>
+  <button id="clearFast2009Btn">Clear Fast Buffers</button>
+  <p id="fast2009Text" style="font-size:12px;margin-top:6px"></p>
+</div>
+
+<!-- NEW QUERY PANEL -->
+<div id="queryPanel">
+  <h4>2019 Crime Query</h4>
+
+  <label>Attribute:</label>
   <select id="attSelect">
-    <option value="ViolentPer1000">Violent Crime Per 1000 Population</option>
+    <option value="ViolentPer1000">Violent Crime Per 1000</option>
     <option value="ViolentInt">Total Violent Crime</option>
   </select>
   <br><br>
 
-  <label for="signSelect">Operator:</label>
+  <label>Operator:</label>
   <select id="signSelect">
     <option value=">">is greater than</option>
     <option value="<">is less than</option>
@@ -88,7 +137,7 @@
   </select>
   <br><br>
 
-  <label for="valSelect">Value:</label>
+  <label>Value:</label>
   <input type="number" id="valSelect" value="5">
   <br><br>
 
@@ -97,20 +146,19 @@
 </div>
 
 <div id="viewDiv"></div>
-<div id="footer">&copy; 2025 Parker Cook | Data source: ESRI Census Housing Year Built</div>
+
+<div id="footer">&copy; 2025 Parker Cook | Data source: ESRI Census Housing Year Built & Texas Crime</div>
 
 <script>
 require([
-  "esri/Map",
-  "esri/views/MapView",
-  "esri/layers/FeatureLayer",
-  "esri/layers/GraphicsLayer",
-  "esri/tasks/QueryTask",
-  "esri/tasks/support/Query",
-  "dojo/dom",
-  "dojo/on",
-  "dojo/_base/array"
-], function(Map, MapView, FeatureLayer, GraphicsLayer, QueryTask, Query, dom, on, arrayUtils){
+  "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer",
+  "esri/layers/GraphicsLayer", "esri/Graphic", "esri/geometry/geometryEngine",
+  "esri/tasks/QueryTask", "esri/tasks/support/Query",
+  "dojo/dom"
+], function(
+  Map, MapView, FeatureLayer, GraphicsLayer, Graphic, geometryEngine,
+  QueryTask, Query, dom
+){
 
   const map = new Map({
     basemap: "streets-navigation-vector"
@@ -119,55 +167,34 @@ require([
   const view = new MapView({
     container: "viewDiv",
     map: map,
-    center: [-98.5795, 39.8283],
-    zoom: 4.5
+    center: [-98.5795, 31.5],
+    zoom: 6
   });
 
+  /* LAYER SETUP */
   const layersInfo = [
-    {
-      name: "State Boundary",
-      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/9"
-    },
-    {
-      name: "Texas Cities 2009",
-      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/8"
-    },
-    {
-      name: "Texas Cities 2019",
-      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/7"
-    },
-    {
-      name: "Cities Violent Per 1000 2009",
-      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/2"
-    },
-    {
-      name: "Cities Violent Per 1000 2019",
-      url: "https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/1"
-    }
+    { name:"State Boundary", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/9" },
+    { name:"Texas Cities 2009", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/8" },
+    { name:"Texas Cities 2019", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/7" },
+    { name:"Cities Violent Per 1000 2009", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/2" },
+    { name:"Cities Violent Per 1000 2019", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/1" }
   ];
 
   const layerObjects = [];
 
-  /* ------------------------------
-     CREATE ALL MAP LAYERS + POPUPS
-  --------------------------------*/
   layersInfo.forEach((info, idx) => {
-
     let popupTemplate = null;
-
-    if (info.name === "Texas Cities 2009" || info.name === "Texas Cities 2019") {
+    if (info.name.includes("Cities")) {
       popupTemplate = {
         title: "{NAME}",
         content: `
           <b>Population:</b> {Population}<br><br>
-
           <b>Violent Crime:</b> {ViolentCrime}<br>
           <b>Murder:</b> {Murder}<br>
           <b>Rape:</b> {Rape}<br>
           <b>Robbery:</b> {Robbery}<br>
           <b>Aggravated Assault:</b> {AggravatedAssault}<br>
           <b>Property Crime:</b> {PropertyCrime}<br><br>
-
           <b>Violent Crime Per 1000:</b> {ViolentPer1000}
         `
       };
@@ -178,43 +205,141 @@ require([
       visible: true,
       id: "layer_" + idx,
       title: info.name,
-      popupTemplate: popupTemplate
+      popupTemplate: popupTemplate,
+      outFields: ["*"]
     });
 
     map.add(fl);
     layerObjects.push(fl);
   });
 
-  /* ------------------------------------
-     GENERATE LAYER TOGGLE CHECKBOXES
-  --------------------------------------*/
-  const layerToggleContainer = document.getElementById("layerToggles");
-
-  layerObjects.forEach((layer, index) => {
-    const div = document.createElement("div");
-
-    div.innerHTML = `
-      <label>
-        <input type="checkbox" id="layerToggle_${index}" checked>
-        ${layer.title}
-      </label>
-    `;
-
-    layerToggleContainer.appendChild(div);
-
-    document.getElementById(`layerToggle_${index}`)
-      .addEventListener("change", (e) => {
-        layer.visible = e.target.checked;
-      });
+  /* TOGGLE LIST */
+  const toggleDiv = dom.byId("layerToggles");
+  layerObjects.forEach((layer,index) => {
+    const row = document.createElement("div");
+    row.innerHTML = `<label><input type="checkbox" id="layerToggle_${index}" checked> ${layer.title}</label>`;
+    toggleDiv.appendChild(row);
+    document.getElementById(`layerToggle_${index}`).addEventListener("change", e => {
+      layer.visible = e.target.checked;
+    });
   });
 
-  /* -----------------------------
-     CRIME QUERY SYSTEM (MERGED)
-  ------------------------------*/
+  /* BUFFER LAYERS */
+  const bufferLayer2009 = new GraphicsLayer();
+  const bufferLayer2019 = new GraphicsLayer();
+  const fastBufferLayer2009 = new GraphicsLayer();
+  map.addMany([bufferLayer2009, bufferLayer2019, fastBufferLayer2009]);
 
-  // Use the 2019 crime layer for query
-  const layerUrl = layersInfo[4].url;
+  const city2009 = layerObjects.find(l=>l.title==="Texas Cities 2009");
+  const city2019 = layerObjects.find(l=>l.title==="Texas Cities 2019");
 
+  function setPrint(year,text){
+    dom.byId(year===2009 ? "print2009" : "print2019").innerText = text;
+  }
+
+  function drawBuffer(year){
+    let cityLayer, bufferLayer, threshold, distance, printTarget;
+
+    if(year===2009){
+      cityLayer = city2009; bufferLayer = bufferLayer2009;
+      threshold = Number(dom.byId("vp2009").value);
+      distance = Number(dom.byId("dist2009").value);
+      printTarget = 2009;
+    } else {
+      cityLayer = city2019; bufferLayer = bufferLayer2019;
+      threshold = Number(dom.byId("vp2019").value);
+      distance = Number(dom.byId("dist2019").value);
+      printTarget = 2019;
+    }
+
+    bufferLayer.removeAll();
+    setPrint(printTarget, "Drawing buffers...");
+
+    const q = cityLayer.createQuery();
+    q.where = `ViolentPer1000 >= ${threshold}`;
+    q.returnGeometry = true;
+    q.outFields = ["*"];
+
+    cityLayer.queryFeatures(q).then(res => {
+      if(!res.features.length){
+        setPrint(printTarget, "No high-crime cities found.");
+        return;
+      }
+
+      res.features.forEach(f=>{
+        const buf = geometryEngine.geodesicBuffer(f.geometry, distance, "miles");
+        bufferLayer.add(new Graphic({
+          geometry: buf,
+          symbol: {
+            type: "simple-fill",
+            color: [255,0,0,0.06],
+            outline: { color:[255,0,0,0.8], width:2 }
+          }
+        }));
+      });
+
+      setPrint(printTarget, `Buffers drawn around ${res.features.length} cities.`);
+    });
+  }
+
+  /* FAST BUFFER */
+  function drawFastBuffer2009() {
+    fastBufferLayer2009.removeAll();
+    dom.byId("fast2009Text").innerText = "Running fast query...";
+
+    const q = city2009.createQuery();
+    q.where = "1=1";
+    q.returnGeometry = true;
+    q.outFields = ["*"];
+    q.num = 5;
+
+    city2009.queryFeatures(q).then(res => {
+      if(!res.features.length){
+        dom.byId("fast2009Text").innerText = "No features found.";
+        return;
+      }
+
+      res.features.forEach(f=>{
+        const buf = geometryEngine.geodesicBuffer(f.geometry, 25, "miles");
+        fastBufferLayer2009.add(new Graphic({
+          geometry: buf,
+          symbol: {
+            type:"simple-fill",
+            color:[0,0,255,0.06],
+            outline:{color:[0,0,255,0.8], width:2}
+          }
+        }));
+      });
+
+      dom.byId("fast2009Text").innerText = "Fast buffer complete.";
+    });
+  }
+
+  /* BUTTONS */
+  dom.byId("buffer2009Btn").addEventListener("click", ()=>drawBuffer(2009));
+  dom.byId("buffer2019Btn").addEventListener("click", ()=>drawBuffer(2019));
+
+  dom.byId("clear2009Btn").addEventListener("click", ()=>{
+    bufferLayer2009.removeAll();
+    setPrint(2009,"Cleared.");
+  });
+
+  dom.byId("clear2019Btn").addEventListener("click", ()=>{
+    bufferLayer2019.removeAll();
+    setPrint(2019,"Cleared.");
+  });
+
+  dom.byId("runFast2009").addEventListener("click", drawFastBuffer2009);
+  dom.byId("clearFast2009Btn").addEventListener("click", ()=>{
+    fastBufferLayer2009.removeAll();
+    dom.byId("fast2009Text").innerText = "Fast buffers cleared.";
+  });
+
+  /* ----------------------------------------------------
+     NEW: QUERY SYSTEM (from second code list)
+  -----------------------------------------------------*/
+
+  const layerUrl = layersInfo[4].url; // Cities Violent Per 1000 2019
   const resultsLayer = new GraphicsLayer();
   map.add(resultsLayer);
 
@@ -243,7 +368,7 @@ require([
       res.features.forEach(f => {
         f.popupTemplate = {
           title: "{NAME}",
-          content: `<b>Violent Crime Per 1000:</b> {${attribute}}`
+          content: `<b>${attribute}:</b> {${attribute}}`
         };
       });
 
@@ -258,10 +383,10 @@ require([
     .catch(err => console.error("Query failed:", err));
   }
 
-  on(dom.byId("doBtn"), "click", doQuery);
+  dom.byId("doBtn").addEventListener("click", doQuery);
 
 });
 </script>
- 
+
 </body>
 </html>
