@@ -5,21 +5,17 @@
   <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no"/>
   <title>Texas Crime</title>
 
-  <!-- ArcGIS CSS for styling the map and widgets -->
+  <!-- ArcGIS CSS -->
   <link rel="stylesheet" href="https://js.arcgis.com/4.21/esri/themes/light/main.css"/>
-
-  <!-- ArcGIS JS API for working with maps, layers, and queries -->
+  <!-- ArcGIS JS API -->
   <script src="https://js.arcgis.com/4.21/"></script>
 
   <style>
-    /* Set the map to take up the full page */
     html, body, #viewDiv {
       height: 100%;
       margin: 0;
       padding: 0;
     }
-
-    /* Controls container at the top-left corner of the map */
     #controls {
       position: absolute;
       top: 10px;
@@ -31,8 +27,6 @@
       z-index: 10;
       width: 220px;
     }
-
-    /* Options container at the bottom-right corner for query inputs */
     #optionsDiv {
       position: absolute;
       bottom: 20px;
@@ -43,14 +37,12 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.3);
       z-index: 10;
     }
-
-    /* Footer centered at the bottom of the map */
     #footer {
       position: absolute;
       bottom: 5px;
       left: 50%;
-      transform: translateX(-50%); /* Centers the footer horizontally */
-      background-color: rgba(255,255,255,0.8); /* Semi-transparent background */
+      transform: translateX(-50%);
+      background-color: rgba(255,255,255,0.8);
       padding: 5px 10px;
       border-radius: 6px;
       font-size: 12px;
@@ -60,64 +52,52 @@
 </head>
 <body>
 
-<!-- Top-left controls for navigation to other map pages -->
 <div id="controls">
   <h3>Texas Crime Change 2009-2019</h3>
-  <div id="navMenu">
-    <label for="pageSelect">Open another map:</label>
-    <select id="pageSelect" onchange="if(this.value) window.open(this.value,'_blank')">
-      <option value="">Select a page</option>
-      <option value="tile_layer.html">Tile Layer</option>
-      <option value="simple_mapping.html">Simple Mapping</option>
-      <option value="query_task.html">Query Task</option>
-      <option value="on_event.html">On Event</option>
-      <option value="dynamic_layers.html">Dynamic Layers</option>
-      <option value="basemap_gallery.html">Basemap Gallery</option>
-    </select>
-  </div>
+
+  <label for="pageSelect">Open another map:</label>
+  <select id="pageSelect" onchange="if(this.value) window.open(this.value,'_blank')">
+    <option value="">Select a page</option>
+    <option value="tile_layer.html">Tile Layer</option>
+    <option value="simple_mapping.html">Simple Mapping</option>
+    <option value="query_task.html">Query Task</option>
+    <option value="on_event.html">On Event</option>
+    <option value="dynamic_layers.html">Dynamic Layers</option>
+    <option value="basemap_gallery.html">Basemap Gallery</option>
+  </select>
 
   <hr>
-<h4>Toggle Layers</h4>
-<div id="layerToggles"></div>
-
+  <h4>Toggle Layers</h4>
+  <div id="layerToggles"></div>
 </div>
 
-<!-- Bottom-right controls for building queries -->
+<!-- Crime Query Panel -->
 <div id="optionsDiv">
-  <!-- Kai- Set query to look at violent crime amounts -->
   <label for="attSelect">2019 Crime Data:</label>
   <select id="attSelect">
     <option value="ViolentPer1000">Violent Crime Per 1000 Population</option>
-    <option value="ViolentInt">Total Violent Crime </option>
+    <option value="ViolentInt">Total Violent Crime</option>
   </select>
   <br><br>
 
-  <!-- Dropdown to select the operator for comparison -->
   <label for="signSelect">Operator:</label>
   <select id="signSelect">
-    <option value="&gt;">is greater than</option>
-    <option value="&lt;">is less than</option>
+    <option value=">">is greater than</option>
+    <option value="<">is less than</option>
     <option value="=">is equal to</option>
   </select>
   <br><br>
 
-  <!-- Input for the value to compare against -->
   <label for="valSelect">Value:</label>
   <input type="number" id="valSelect" value="5">
   <br><br>
 
-  <!-- Button to run the query -->
   <button id="doBtn">Run Query</button>
-
-  <!-- Paragraph to print the number of results found -->
   <p id="printResults"></p>
 </div>
 
-<!-- The div that will contain the ArcGIS map -->
 <div id="viewDiv"></div>
-
-<!-- Kai- adjusted footer -->
-<div id="footer">&copy; 2025 Parker Cook Marissa Lucke Seth Collinsworth Kai McDonald | Data source: City of Austin</div>
+<div id="footer">&copy; 2025 Parker Cook | Data source: ESRI Census Housing Year Built</div>
 
 <script>
 require([
@@ -132,9 +112,6 @@ require([
   "dojo/_base/array"
 ], function(Map, MapView, FeatureLayer, GraphicsLayer, QueryTask, Query, dom, on, arrayUtils){
 
-  // ----------------------------------------
-  // 1. MAP + VIEW
-  // ----------------------------------------
   const map = new Map({
     basemap: "streets-navigation-vector"
   });
@@ -146,9 +123,6 @@ require([
     zoom: 4.5
   });
 
-  // ----------------------------------------
-  // 2. DEFINE ALL YOUR LAYERS HERE
-  // ----------------------------------------
   const layersInfo = [
     {
       name: "State Boundary",
@@ -172,27 +146,48 @@ require([
     }
   ];
 
-
-  // ----------------------------------------
-  // 3. LOAD THE LAYERS AND ADD TO MAP
-  // ----------------------------------------
   const layerObjects = [];
 
+  /* ------------------------------
+     CREATE ALL MAP LAYERS + POPUPS
+  --------------------------------*/
   layersInfo.forEach((info, idx) => {
+
+    let popupTemplate = null;
+
+    if (info.name === "Texas Cities 2009" || info.name === "Texas Cities 2019") {
+      popupTemplate = {
+        title: "{NAME}",
+        content: `
+          <b>Population:</b> {Population}<br><br>
+
+          <b>Violent Crime:</b> {ViolentCrime}<br>
+          <b>Murder:</b> {Murder}<br>
+          <b>Rape:</b> {Rape}<br>
+          <b>Robbery:</b> {Robbery}<br>
+          <b>Aggravated Assault:</b> {AggravatedAssault}<br>
+          <b>Property Crime:</b> {PropertyCrime}<br><br>
+
+          <b>Violent Crime Per 1000:</b> {ViolentPer1000}
+        `
+      };
+    }
+
     const fl = new FeatureLayer({
       url: info.url,
       visible: true,
       id: "layer_" + idx,
-      title: info.name
+      title: info.name,
+      popupTemplate: popupTemplate
     });
 
     map.add(fl);
     layerObjects.push(fl);
   });
 
-  // ----------------------------------------
-  // 4. AUTO-GENERATE CHECKBOXES FOR LAYERS
-  // ----------------------------------------
+  /* ------------------------------------
+     GENERATE LAYER TOGGLE CHECKBOXES
+  --------------------------------------*/
   const layerToggleContainer = document.getElementById("layerToggles");
 
   layerObjects.forEach((layer, index) => {
@@ -207,18 +202,17 @@ require([
 
     layerToggleContainer.appendChild(div);
 
-    // Bind checkbox → visibility toggle
     document.getElementById(`layerToggle_${index}`)
       .addEventListener("change", (e) => {
         layer.visible = e.target.checked;
       });
   });
 
-  // ----------------------------------------
-  // 5. KEEP YOUR ORIGINAL QUERY CODE INTACT
-  // ----------------------------------------
+  /* -----------------------------
+     CRIME QUERY SYSTEM (MERGED)
+  ------------------------------*/
 
-  // Kai- set to only look at 2019 crime layer
+  // Use the 2019 crime layer for query
   const layerUrl = layersInfo[4].url;
 
   const resultsLayer = new GraphicsLayer();
@@ -230,7 +224,7 @@ require([
     returnGeometry: true,
     outFields: ["*"]
   });
-  
+
   function doQuery(){
     resultsLayer.removeAll();
 
@@ -246,9 +240,9 @@ require([
         return;
       }
 
-      arrayUtils.forEach(res.features, function(f){
+      res.features.forEach(f => {
         f.popupTemplate = {
-          title: "Query Result",
+          title: "{NAME}",
           content: `{${attribute}}`
         };
       });
@@ -259,8 +253,9 @@ require([
         view.popup.open({ features: res.features });
       });
 
-      dom.byId("printResults").innerHTML = res.features.length + " results found!";
-    }).catch(err => console.error("Query failed:", err));
+      dom.byId("printResults").innerHTML = `${res.features.length} results found!`;
+    })
+    .catch(err => console.error("Query failed:", err));
   }
 
   on(dom.byId("doBtn"), "click", doQuery);
@@ -269,5 +264,4 @@ require([
 </script>
 
 </body>
-</html>
 </html>
