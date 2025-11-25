@@ -1,0 +1,235 @@
+/* ---------------- Cappuccino Palette (Hex Key) ---------------- */
+/* #4b3832, #854442, #fff4e6, #3c2f2f, #be9b7b */
+:root {
+  --cappuccino-dark:   #4b3832; /* RGB(75,56,50)   */
+  --cappuccino-red:    #854442; /* RGB(133,68,66)  */
+  --cappuccino-cream:  #fff4e6; /* RGB(255,244,230)*/
+  --cappuccino-ink:    #3c2f2f; /* RGB(60,47,47)   */
+  --cappuccino-tan:    #be9b7b; /* RGB(190,155,123)*/
+}
+
+/* ---------------- Global Layout ---------------- */
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--cappuccino-ink);
+}
+
+/* Map sits below the fixed banner */
+#viewDiv {
+  height: calc(100% - 80px);
+  margin-top: 80px;
+}
+
+/* ---------------- Overhead Banner ---------------- */
+
+#topBanner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  /* slightly smaller banner */
+  height: 80px;
+  padding: 10px 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  /* Lighter, flipped gradient: tan -> cream -> dark */
+  background: linear-gradient(
+    90deg,
+    var(--cappuccino-tan),
+    var(--cappuccino-dark)
+  );
+
+  color: var(--cappuccino-ink); /* darker text reads better on lighter gradient */
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+
+  /* Banner underline now cappuccino red (unchanged) */
+  border-bottom: 6px solid var(--cappuccino-red);
+
+  z-index: 50;
+}
+
+.ui-banner__title {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.ui-banner__subtitle {
+  font-size: 18px;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+/* Right side of banner holds the nav buttons */
+.ui-banner__right {
+  margin-left: auto;           /* pushes buttons to the right edge */
+  display: flex;
+  align-items: center;
+}
+
+.ui-banner__nav {
+  display: flex;
+  gap: 12px;                   /* space between the two buttons */
+}
+
+/* Banner buttons */
+.nav-btn {
+  display: inline-block;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 999px;        /* fully rounded corners (pill shape) */
+  border: 1px solid rgba(60, 47, 47, 0.4);
+  background-color: var(--cappuccino-red);
+  color: var(--cappuccino-cream);
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+}
+
+.nav-btn:hover {
+  background-color: var(--cappuccino-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.nav-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* ---------------- Floating Panels ---------------- */
+
+#controls,
+#bufferPanel2009,
+#bufferPanel2019,
+#quickBuffer2009,
+#queryPanel {
+  position: fixed;
+  background: var(--cappuccino-cream);
+  padding: 10px;
+  border-radius: 6px;
+  width: 220px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  color: var(--cappuccino-ink);
+  font-size: 13px;
+  font-weight: 300;
+}
+
+/* Individual positions – pushed down so they don’t sit under the banner */
+#controls {
+  top: 120px;
+  left: 10px;
+}
+
+#bufferPanel2009 {
+  top: 120px;
+  right: 10px;
+}
+
+#bufferPanel2019 {
+  top: 340px;
+  right: 10px;
+}
+
+#quickBuffer2009 {
+  top: 560px;
+  right: 10px;
+}
+
+#queryPanel {
+  right: 10px;
+  bottom: 30px;
+  top: auto;    /* cancel any top positioning */
+}
+
+
+
+#controls h3,
+#controls h4,
+#bufferPanel2009 h4,
+#bufferPanel2019 h4,
+#quickBuffer2009 h4,
+#queryPanel h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: var(--cappuccino-dark);
+}
+
+/* ---------------- Footer ---------------- */
+
+#footer {
+  position: fixed;  /* overlay on top of the map */
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 244, 230, 0.8);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  text-align: center;
+  color: var(--cappuccino-dark);
+  z-index: 100;     /* above map UI */
+}
+
+/* ---------------- Responsive ---------------- */
+
+@media (max-width: 768px) {
+  #topBanner {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    padding: 8px 16px;
+  }
+
+  #viewDiv {
+    margin-top: 80px;
+    height: calc(100% - 80px);
+  }
+
+  .ui-banner__right {
+    margin-top: 4px;
+    text-align: left;
+  }
+
+  .ui-palette-key {
+    justify-content: flex-start;
+  }
+
+  /* Optional: nicer buttons on small screens */
+  .ui-banner__nav {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .nav-btn {
+    padding: 6px 16px;
+    font-size: 13px;
+  }
+
+  #bufferPanel2009 { top: 96px; }
+  #bufferPanel2019 { top: 280px; }
+  #quickBuffer2009 { top: 464px; }
+
+  #queryPanel {
+    right: 10px;
+    bottom: 90px;
+    top: auto;
+  }
+}
