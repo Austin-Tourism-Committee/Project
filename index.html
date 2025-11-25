@@ -154,10 +154,10 @@ require([
   "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer",
   "esri/layers/GraphicsLayer", "esri/Graphic", "esri/geometry/geometryEngine",
   "esri/tasks/QueryTask", "esri/tasks/support/Query",
-  "dojo/dom"
+  "dojo/dom", "esri/widgets/Legend"
 ], function(
   Map, MapView, FeatureLayer, GraphicsLayer, Graphic, geometryEngine,
-  QueryTask, Query, dom
+  QueryTask, Query, dom, Legend
 ){
 
   const map = new Map({
@@ -384,6 +384,16 @@ require([
   }
 
   dom.byId("doBtn").addEventListener("click", doQuery);
+
+  // Creates a legend named legend in the bottom left
+  let legend = new Legend({
+    view: view,
+  });
+
+  // Move zoom button bottom left
+  view.ui.move("zoom", "bottom-left");
+  // Add legend in bottom left
+  view.ui.add(legend, "bottom-left");
 
 });
 </script>
