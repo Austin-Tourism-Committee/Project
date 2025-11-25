@@ -84,10 +84,10 @@ require([
   "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer",
   "esri/layers/GraphicsLayer", "esri/Graphic", "esri/geometry/geometryEngine",
   "esri/tasks/QueryTask", "esri/tasks/support/Query",
-  "dojo/dom"
+  "dojo/dom", "esri/widgets/Legend"
 ], function(
   Map, MapView, FeatureLayer, GraphicsLayer, Graphic, geometryEngine,
-  QueryTask, Query, dom
+  QueryTask, Query, dom, Legend
 ){
 
   const map = new Map({
@@ -314,6 +314,37 @@ require([
   }
 
   dom.byId("doBtn").addEventListener("click", doQuery);
+
+  // Creates a legend named legend in the bottom left of the screen.
+  // Only displays the active layer
+  let legend = new Legend({
+    view: view,
+    // This will be the logic that determines what layer to display on the legend.
+    // Needs input from year variable that changes due to date button.
+    // if (year == 2009) {
+    //   layerInfos: [
+    //     {
+    //       layer: layerObjects["3"] //display 2009 layer
+    //     }
+    //   ]
+    // }else {
+    //   layerInfos: [
+    //     {
+    //       layer: layerObjects["4"] //display 2019 layer
+    //     }
+    //   ]
+    // }
+    layerInfos: [ //limits which layers are shown in the legend
+      {
+        layer: layerObjects["4"] //display 2019 layer
+      }
+    ]
+  });
+
+  // Add legend in bottom left
+  view.ui.add(legend, "bottom-left");
+  // Move zoom button bottom left
+  view.ui.move("zoom", "bottom-left");
 
 });
 </script>
