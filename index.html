@@ -385,15 +385,37 @@ require([
 
   dom.byId("doBtn").addEventListener("click", doQuery);
 
-  // Creates a legend named legend in the bottom left
+  // Creates a legend named legend in the bottom left of the screen.
+  // Only displays the active layer
   let legend = new Legend({
     view: view,
+    // This will be the logic that determines what layer to display on the legend.
+    // Needs input from year variable that changes due to date button.
+    // if (year == 2009) {
+    //   layerInfos: [
+    //     {
+    //       layer: layerObjects["3"] //display 2009 layer
+    //     }
+    //   ]
+    // }else {
+    //   layerInfos: [
+    //     {
+    //       layer: layerObjects["4"] //display 2019 layer
+    //     }
+    //   ]
+    // }
+    layerInfos: [ //limits which layers are shown in the legend
+      {
+        layer: layerObjects["4"] //display 2019 layer
+      }
+    ]
   });
 
-  // Move zoom button bottom left
-  view.ui.move("zoom", "bottom-left");
   // Add legend in bottom left
   view.ui.add(legend, "bottom-left");
+  // Move zoom button bottom left
+  view.ui.move("zoom", "bottom-left");
+
 
 });
 </script>
