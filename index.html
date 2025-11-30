@@ -8,17 +8,17 @@
   <link rel="stylesheet" href="https://js.arcgis.com/4.21/esri/themes/light/main.css"/>
   <script src="https://js.arcgis.com/4.21/"></script>
 
-  <!-- CSS Link with all inline styles included -->
+  <!-- CSS Link with inline styles included -->
   <link rel="stylesheet" href="css/main_style.css" />
 
  </head>
 <body>
 
-<div id="controls">
-  <h3>Texas Crime Change 2009 & 2019</h3>
-  <h4>Toggle Layers</h4>
-  <div id="layerToggles"></div>
-</div>
+  <div id="controls">
+    <h3>Texas Crime Change 2009 & 2019</h3>
+    <h4>Toggle Layers</h4>
+    <div id="layerToggles"></div>
+  </div>
 
 <!-- 2009 Buffer Panel -->
 <div id="bufferPanel2009">
@@ -77,22 +77,22 @@
 
 <div id="viewDiv"></div>
 
-<div id="footer">&copy; 2025 Parker Cook | Data source: ESRI Census Housing Year Built & Texas Crime</div>
+<div id="footer">&copy; 2025 Cook, Lucke, McDonald | Data source: ESRI Census Housing Year Built & Texas Crime</div>
 
 <script>
 require([
   "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer",
   "esri/layers/GraphicsLayer", "esri/Graphic", "esri/geometry/geometryEngine",
   "esri/tasks/QueryTask", "esri/tasks/support/Query",
-  "dojo/dom", "esri/widgets/Legend"
+  "dojo/dom", "esri/widgets/Legend", "esri/widgets/Home"
 ], function(
   Map, MapView, FeatureLayer, GraphicsLayer, Graphic, geometryEngine,
-  QueryTask, Query, dom, Legend
+  QueryTask, Query, dom, Legend, Home,
 ){
 
   const map = new Map({
-    basemap: "streets-navigation-vector"
-  });
+  basemap: "osm"
+});
 
   const view = new MapView({
     container: "viewDiv",
@@ -100,6 +100,10 @@ require([
     center: [-98.5795, 31.5],
     zoom: 6
   });
+
+const homeWidget = new Home({
+  view: view
+});
 
   /* LAYER SETUP */
   const layersInfo = [
@@ -141,6 +145,16 @@ require([
 
     map.add(fl);
     layerObjects.push(fl);
+  });
+
+  // --- Texas extent on load ---
+  view.when(function () {
+    const stateLayer = layerObjects[0]; // "State Boundary" layer
+    if (!stateLayer) return;
+
+    stateLayer.when().then(function () {
+      view.goTo(stateLayer.fullExtent.expand(0.80));
+    });
   });
 
   /* TOGGLE LIST */
@@ -265,10 +279,6 @@ require([
     dom.byId("fast2009Text").innerText = "Fast buffers cleared.";
   });
 
-  /* ----------------------------------------------------
-     NEW: QUERY SYSTEM (from second code list)
-  -----------------------------------------------------*/
-
   const layerUrl = layersInfo[4].url; // Cities Violent Per 1000 2019
   const resultsLayer = new GraphicsLayer();
   map.add(resultsLayer);
@@ -317,34 +327,26 @@ require([
 
   // Creates a legend named legend in the bottom left of the screen.
   // Only displays the active layer
+  // Creates a Legend named legend in the bottom left of the screen.
   let legend = new Legend({
     view: view,
-    // This will be the logic that determines what layer to display on the legend.
-    // Needs input from year variable that changes due to date button.
-    // if (year == 2009) {
-    //   layerInfos: [
-    //     {
-    //       layer: layerObjects["3"] //display 2009 layer
-    //     }
-    //   ]
-    // }else {
-    //   layerInfos: [
-    //     {
-    //       layer: layerObjects["4"] //display 2019 layer
-    //     }
-    //   ]
-    // }
-    layerInfos: [ //limits which layers are shown in the legend
+    layerInfos: [
       {
-        layer: layerObjects["4"] //display 2019 layer
+        layer: layerObjects[4],              // Cities Violent Per 1000
+        title: "Violence Per 1000 People"
       }
     ]
   });
+  const home = new Home({
+  view: view
+});
 
-  // Add legend in bottom left
-  view.ui.add(legend, "bottom-left");
-  // Move zoom button bottom left
-  view.ui.move("zoom", "bottom-left");
+// Add legend in bottom left
+view.ui.add(legend, "bottom-left");
+// Move zoom button bottom left
+view.ui.move("zoom", "bottom-left");
+// Add Home button just above zoom
+view.ui.add(home, "bottom-left");
 
 });
 </script>

@@ -19,7 +19,6 @@ body {
   background-color: var(--cappuccino-ink);
 }
 
-/* Map sits below the fixed banner */
 #viewDiv {
   height: calc(100% - 80px);
   margin-top: 80px;
@@ -33,7 +32,6 @@ body {
   left: 0;
   right: 0;
 
-  /* slightly smaller banner */
   height: 80px;
   padding: 10px 24px;
 
@@ -41,18 +39,16 @@ body {
   align-items: center;
   justify-content: flex-start;
 
-  /* Lighter, flipped gradient: tan -> cream -> dark */
-  background: linear-gradient(
+    background: linear-gradient(
     90deg,
     var(--cappuccino-tan),
     var(--cappuccino-dark)
   );
 
-  color: var(--cappuccino-ink); /* darker text reads better on lighter gradient */
+  color: var(--cappuccino-ink);
 
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 
-  /* Banner underline now cappuccino red (unchanged) */
   border-bottom: 6px solid var(--cappuccino-red);
 
   z-index: 50;
@@ -73,14 +69,14 @@ body {
 
 /* Right side of banner holds the nav buttons */
 .ui-banner__right {
-  margin-left: auto;           /* pushes buttons to the right edge */
+  margin-left: auto;
   display: flex;
   align-items: center;
 }
 
 .ui-banner__nav {
   display: flex;
-  gap: 12px;                   /* space between the two buttons */
+  gap: 12px;
 }
 
 /* Banner buttons */
@@ -89,7 +85,7 @@ body {
   padding: 8px 20px;
   font-size: 14px;
   font-weight: 500;
-  border-radius: 999px;        /* fully rounded corners (pill shape) */
+  border-radius: 999px;        /* fully rounded corners */
   border: 1px solid rgba(60, 47, 47, 0.4);
   background-color: var(--cappuccino-red);
   color: var(--cappuccino-cream);
@@ -132,7 +128,6 @@ body {
   font-weight: 300;
 }
 
-/* Individual positions – pushed down so they don’t sit under the banner */
 #controls {
   top: 120px;
   left: 10px;
@@ -156,10 +151,8 @@ body {
 #queryPanel {
   right: 10px;
   bottom: 30px;
-  top: auto;    /* cancel any top positioning */
+  top: auto;
 }
-
-
 
 #controls h3,
 #controls h4,
@@ -170,6 +163,55 @@ body {
   margin-top: 0;
   margin-bottom: 8px;
   color: var(--cappuccino-dark);
+}
+
+/* -------- Legend styling -------- */
+
+/* Match legend panel to cappuccino UI */
+.esri-legend.esri-widget {
+  background-color: var(--cappuccino-cream) !important;
+  color: var(--cappuccino-ink) !important;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Hide the field caption line ("ViolentPer1000") */
+.esri-legend__layer-caption {
+  display: none !important;
+}
+
+.esri-legend__symbol-label {
+  font-weight: 600;
+  color: var(--cappuccino-dark);
+  font-size: 13px;
+}
+
+.esri-legend__layer-row {
+  margin: 4px 0;
+}
+
+/* -------- Map UI buttons (Home + Zoom) -------- */
+.esri-zoom .esri-widget--button,
+.esri-home.esri-widget--button,
+.esri-home .esri-widget--button {
+  background-color: var(--cappuccino-red) !important;
+  color: var(--cappuccino-cream) !important;
+  border: none;
+  border-radius: 0;                 /* square corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Hover / active states */
+.esri-zoom .esri-widget--button:hover,
+.esri-home.esri-widget--button:hover,
+.esri-home .esri-widget--button:hover {
+  background-color: var(--cappuccino-dark) !important;
+}
+
+.esri-zoom .esri-widget--button:active,
+.esri-home.esri-widget--button:active,
+.esri-home .esri-widget--button:active {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
 /* ---------------- Footer ---------------- */
@@ -185,7 +227,7 @@ body {
   font-size: 10px;
   text-align: center;
   color: var(--cappuccino-dark);
-  z-index: 100;     /* above map UI */
+  z-index: 100;
 }
 
 /* ---------------- Responsive ---------------- */
@@ -212,7 +254,6 @@ body {
     justify-content: flex-start;
   }
 
-  /* Optional: nicer buttons on small screens */
   .ui-banner__nav {
     flex-wrap: wrap;
     gap: 8px;
