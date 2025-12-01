@@ -14,6 +14,8 @@
  </head>
 <body>
 
+  <!-- MAIN MAP APP (everything that belongs to the map/home view) -->
+<div id="mainApp">
   <div id="controls">
     <h3>Texas Crime Change 2009 & 2019</h3>
     <h4>Toggle Layers</h4>
@@ -77,7 +79,108 @@
 
 <div id="viewDiv"></div>
 
-<div id="footer">&copy; 2025 Cook, Lucke, McDonald | Data source: ESRI Census Housing Year Built & Texas Crime</div>
+<div id="footer">&copy; 2025 Collinsworth, Cook, Lucke, McDonald | Data source: ESRI Census Housing Year Built & Texas Crime
+</div>
+
+</div> <!-- end mainApp -->
+
+<!-- RESOURCES PANEL (swaps with the map area) -->
+<div id="resourcesPanel">
+  <div class="resources-inner">
+  <h2>Data Resources Utilized</h2>
+
+  <p class="resources-intro">
+    The Following Datasets and Patial References Were Utilized to Build the <br>
+    Texas Crime 2009 & 2019 Map
+  </p>
+
+  <section class="resource-section">
+    <h3>FBI Crime Data</h3>
+    <ul class="resource-list">
+      <li>
+        <a href="https://ucr.fbi.gov/crime-in-the-u.s/2019/crime-in-the-u.s.-2019/tables/table-8/table-8-state-cuts/texas.xls" target="_blank" rel="noopener">
+          Texas Crime 2019 – FBI UCR Table 8 (Texas)
+        </a>
+      </li>
+      <li>
+        <a href="https://ucr.fbi.gov/crime-in-the-u.s/2009" target="_blank" rel="noopener">
+          Texas Crime 2009 – FBI Crime in the U.S. 2009
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <section class="resource-section">
+    <h3> Texas Boundary & Cities Layers</h3>
+    <ul class="resource-list">
+      <li>
+        <a href="https://catalog.data.gov/dataset/tiger-line-shapefile-2017-state-texas-current-place-state-based" target="_blank" rel="noopener">
+          Texas Cities – TIGER/Line Shapefile 2017, Current Places
+        </a>
+      </li>
+      <li>
+        <a href="https://gis-txdot.opendata.arcgis.com/datasets/TXDOT::texas-state-boundary/about" target="_blank" rel="noopener">
+          Texas State Boundary – TxDOT Open Data
+        </a>
+      </li>
+    </ul>
+  </section>
+  </div>
+</div> <!-- end Resources -->
+
+<!-- ABOUT US PANEL (swaps with the map area) -->
+<div id="aboutPanel">
+  <div class="about-inner">
+    <h2>About The Team</h2>
+
+  <div class="about-person">
+    <img src="images/Parker.jpg" alt="Parker Cook">
+    <div class="about-text">
+      <h4>Parker Cook</h4>
+      <p>
+        I am a GIS major and Sustainability Studies minor.
+        My research interests are solar and wind energy, remote sensing, and resource management.
+        Outside of school I enjoy cooking and hiking.
+      </p>
+    </div>
+  </div>
+
+  <div class="about-person">
+    <img src="images/Marissa.jpg" alt="Marissa Lucke">
+    <div class="about-text">
+      <h4>Marissa Lucke</h4>
+      <p>
+        I am a GIS major and Data Analytics minor.
+        My research interests are planetary mapping, remote sensing, and geospatial programming.
+        Outside of school I enjoying spending time cooking, baking, and taking my two dogs on long walks.
+      </p>
+    </div>
+  </div>
+
+  <div class="about-person">
+    <img src="images/Kai.jpg" alt="Kai McDonald">
+    <div class="about-text">
+      <h4>Kai McDonald</h4>
+      <p>
+        I am a GIS major and Data Analytics minor.
+        My research interests are remote sensing, civil engineering, and wildlife conservation.
+        Outside of school I enjoy bird watching and hiking.
+      </p>
+    </div>
+  </div>
+
+  <div class="about-person">
+    <img src="images/Seth.jpg" alt="Seth Collinsworth">
+    <div class="about-text">
+      <h4>Seth Collinsworth</h4>
+      <p>
+        I am a ___ major and ____ minor.
+        My research interests are _____, ______, and _____.
+        Outside of school I enjoying spending time ________.
+      </p>
+    </div>
+  </div>
+</div> <!-- end About Us Panel -->
 
 <script>
 require([
@@ -133,7 +236,7 @@ const homeWidget = new Home({
         `
       };
     }
-
+    
     const fl = new FeatureLayer({
       url: info.url,
       visible: true,
@@ -325,9 +428,7 @@ const homeWidget = new Home({
 
   dom.byId("doBtn").addEventListener("click", doQuery);
 
-  // Creates a legend named legend in the bottom left of the screen.
-  // Only displays the active layer
-  // Creates a Legend named legend in the bottom left of the screen.
+  // Creates legend
   let legend = new Legend({
     view: view,
     layerInfos: [

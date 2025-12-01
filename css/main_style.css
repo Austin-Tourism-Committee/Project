@@ -19,6 +19,12 @@ body {
   background-color: var(--cappuccino-ink);
 }
 
+#mainApp {
+  position: relative;
+  height: 100%;   /* so #viewDiv 100% works */
+  display: block; /* default visible */
+}
+
 #viewDiv {
   height: calc(100% - 80px);
   margin-top: 80px;
@@ -63,7 +69,7 @@ body {
 
 .ui-banner__subtitle {
   font-size: 18px;
-  font-weight: 400;
+  font-weight: 500;
   opacity: 0.9;
 }
 
@@ -228,6 +234,128 @@ body {
   text-align: center;
   color: var(--cappuccino-dark);
   z-index: 100;
+}
+
+/* ---------- Map / Resources / About view swap ---------- */
+#aboutPanel,
+#resourcesPanel {
+  display: none;
+  height: calc(100% - 80px);
+  margin-top: 80px;
+  padding: 20px;
+  background-color: var(--cappuccino-ink);
+  color: var(--cappuccino-cream);
+  overflow-y: auto;
+}
+
+/* Center headings in About and Resources panels */
+#aboutPanel h2,
+#resourcesPanel h2 {
+  text-align: center;
+}
+
+/* Panel titles */
+#aboutPanel h2,
+#resourcesPanel h2 {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+/* Section subtitles  */
+#resourcesPanel h3 {
+  font-size: 25px;
+  font-weight: 600;
+}
+
+/* Body text in panels */
+#aboutPanel p {
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.about-inner,
+.resources-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ---------- Resources panel layout ---------- */
+
+.resources-intro {
+  text-align: center;
+  margin: 50px 0 50px;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.6;
+  color: var(--cappuccino-red);
+}
+
+.resource-section {
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+
+.resource-section h3 {
+  text-align: left;
+  margin-top: 50px;
+  margin-bottom: 35px;
+  color: var(--cappuccino-tan);
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.resource-list {
+  list-style: none;
+  margin: 0 auto;
+  padding-left: 0;
+  text-align: left;
+}
+
+.resource-list li {
+  gap: 35px;
+  margin-bottom: 35px;
+}
+
+.resource-list a {
+  color: var(--cappuccino-cream);
+  text-decoration: underline;
+  font-size: 20px;
+}
+
+.resource-list a:hover {
+  color: var(--cappuccino-red);
+}
+
+/* ---------- About Us panel layout ---------- */
+
+.about-person {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.about-person img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 5px solid var(--cappuccino-red);
+
+}
+
+.about-text h4 {
+  margin: 0 0 4px;
+  color: var(--cappuccino-tan);
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.about-text p {
+  margin: 0;
+  color: var(--cappuccino-cream);
+  font-size: 16px;
+  line-height: 1.4;
 }
 
 /* ---------------- Responsive ---------------- */
