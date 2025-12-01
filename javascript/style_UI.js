@@ -9,17 +9,44 @@ document.addEventListener("DOMContentLoaded", function () {
         TEXAS CRIME 2009 & 2019
       </div>
       <div class="ui-banner__subtitle">
-        Comparison of City-level crime change and hot spot patterns across Texas
+        Comparison of city-level crime change and hot spot patterns across Texas
       </div>
     </div>
 
     <div class="ui-banner__right">
       <nav class="ui-banner__nav">
-        <a href="Resources.html" class="nav-btn">Resources</a>
-        <a href="About Us.html" class="nav-btn">About Us</a>
+        <button id="btn-home" class="nav-btn" type="button">Home</button>
+        <button id="btn-resources" class="nav-btn" type="button">Resources</button>
+        <button id="btn-about" class="nav-btn" type="button">About Us</button>
       </nav>
     </div>
   `;
 
   document.body.prepend(banner);
+
+  // --- Swap between views: Home, Resources, About Us ---
+  const mainApp       = document.getElementById("mainApp");
+  const aboutPanel    = document.getElementById("aboutPanel");
+  const resourcesPanel = document.getElementById("resourcesPanel");
+
+  const mapBtn       = document.getElementById("btn-home");
+  const resourcesBtn = document.getElementById("btn-resources");
+  const aboutBtn     = document.getElementById("btn-about");
+
+  if (mainApp && aboutPanel && resourcesPanel && mapBtn && resourcesBtn && aboutBtn) {
+
+    // shows only one panel at a time
+    function showPanel(which) {
+      mainApp.style.display        = (which === "home") ? "block" : "none";
+      resourcesPanel.style.display = (which === "resources") ? "block" : "none";
+      aboutPanel.style.display     = (which === "about") ? "block" : "none";
+    }
+
+    // default view = map
+    showPanel("home");
+
+    mapBtn.addEventListener("click", () => showPanel("home"));
+    resourcesBtn.addEventListener("click", () => showPanel("resources"));
+    aboutBtn.addEventListener("click", () => showPanel("about"));
+  }
 });
