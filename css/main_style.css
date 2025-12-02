@@ -171,6 +171,20 @@ body {
   color: var(--cappuccino-dark);
 }
 
+/* Panel Buttons */
+#buffer2009Btn,
+#buffer2019Btn,
+#clear2009Btn,
+#clear2019Btn,
+#runFast2009,
+#runFast2019,
+#clearFast2009Btn,
+#clearFast2019Btn,
+#doBtn {
+  background-color: var(--cappuccino-red);
+  color: var(--cappuccino-cream);
+}
+
 /* -------- Legend styling -------- */
 
 /* Match legend panel to cappuccino UI */
