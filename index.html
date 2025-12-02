@@ -228,8 +228,8 @@ const homeWidget = new Home({
     { name:"State Boundary", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/9" },
     { name:"Texas Cities 2009", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/8" },
     { name:"Texas Cities 2019", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/7" },
-    { name:"Cities Violent Per 1000 2009", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/2" },
-    { name:"Cities Violent Per 1000 2019", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/1" }
+    { name:"Violence Per 1000 People: 2009", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/2" },
+    { name:"Violence Per 1000 People: 2019", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/1" }
   ];
 
   const layerObjects = [];
@@ -278,15 +278,20 @@ const homeWidget = new Home({
   });
 
   /* TOGGLE LIST */
-  // Create checkboxes so users can turn layers on/off
+  // Creates radio boxes to switch between 2009 and 2019
+  layerObjects[4].visible = false; // 2019 layer off by default
   const toggleDiv = dom.byId("layerToggles");
-  layerObjects.forEach((layer,index) => {
-    const row = document.createElement("div");
-    row.innerHTML = `<label><input type="checkbox" id="layerToggle_${index}" checked> ${layer.title}</label>`;
-    toggleDiv.appendChild(row);
-    document.getElementById(`layerToggle_${index}`).addEventListener("change", e => {
-      layer.visible = e.target.checked;
-    });
+  const row = document.createElement("div"); //create div
+  //create radio boxes
+  row.innerHTML = `<input id="layerToggle_2009" type="radio" name="dateSwitchTest" checked><label for="layerToggle_2009">2009</label><input id="layerToggle_2019" type="radio" name="dateSwitchTest"><label for="layerToggle_2019">2019</label>`;
+  toggleDiv.appendChild(row);
+  document.getElementById(`layerToggle_2009`).addEventListener("change", e => {
+    layerObjects[3].visible = e.target.checked; //Turn 2009 layer on
+    layerObjects[4].visible = !e.target.checked; //Turn 2019 layer off
+  });
+  document.getElementById(`layerToggle_2019`).addEventListener("change", e => {
+    layerObjects[4].visible = e.target.checked; //Turn 2019 layer on
+    layerObjects[3].visible = !e.target.checked; //Turn 2009 layer off
   });
 
   /* BUFFER LAYERS */
@@ -460,19 +465,22 @@ const homeWidget = new Home({
   // Run query when button clicked
   dom.byId("doBtn").addEventListener("click", doQuery);
 
-  // LEGEND + HOME WIDGET SETUP
+  // LEGEND SETUP
+  // Disable 'State Boudary' in legend
+  layerObjects[0].legendEnabled = false;
+  // Disable 'Texas Cities 2009' in legend
+  layerObjects[1].legendEnabled = false;
+  // Disable 'Texas Cities 2019' in legend
+  layerObjects[2].legendEnabled = false;
   let legend = new Legend({
     view: view,
-    layerInfos: [
-      {
-        layer: layerObjects[4],              // Cities Violent Per 1000
-        title: "Violence Per 1000 People"
-      }
-    ]
   });
+
+
+  // HOME WIDGET SETUP
   const home = new Home({
-  view: view
-});
+    view: view
+  });
 
 // Add legend in bottom left
 view.ui.add(legend, "bottom-left");
