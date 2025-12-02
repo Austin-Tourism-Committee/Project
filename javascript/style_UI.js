@@ -6,10 +6,10 @@ document.addEventListener("DOMContentLoaded", function () {
   banner.innerHTML = `
     <div class="ui-banner__left">
       <div class="ui-banner__title">
-        TEXAS CRIME 2009 & 2019
+        TEXAS VIOLENT CRIME: 2009 & 2019
       </div>
       <div class="ui-banner__subtitle">
-        Comparison of city-level crime change and hot spot patterns across Texas
+        Comparison of city-level violent crime rates and hot spot patterns across Texas
       </div>
     </div>
 
