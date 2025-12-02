@@ -132,6 +132,7 @@ body {
   color: var(--cappuccino-ink);
   font-size: 13px;
   font-weight: 300;
+  border: 3px solid var(--cappuccino-red);
 }
 
 #controls {
@@ -169,6 +170,8 @@ body {
   margin-top: 0;
   margin-bottom: 8px;
   color: var(--cappuccino-dark);
+  font-size: 15px;
+  /* text-decoration: underline; */
 }
 
 /* Panel Buttons */
@@ -197,16 +200,49 @@ body {
   background-color: var(--cappuccino-dark);
 }
 
-/* -------- Legend styling -------- */
+#layerToggle_2019,
+#layerToggle_2009 {
+  accent-color: var(--cappuccino-red);
+}
 
-/* Match legend panel to cappuccino UI */
-.esri-legend.esri-widget {
+/* Panel Inputs */
+#vp2019,
+#dist2019,
+#vp2009,
+#dist2009,
+#attSelect,
+#signSelect,
+#valSelect {
+  background-color: var(--cappuccino-red);
+  border: 2px solid var(--cappuccino-ink);
+  color: var(--cappuccino-cream);
+}
+
+/* Remove Input arrows */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* -------- Widget styling -------- */
+
+/* Match widgets to cappuccino UI */
+.esri-widget {
   background-color: var(--cappuccino-cream) !important;
   color: var(--cappuccino-ink) !important;
   border-radius: 6px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
+.esri-widget__heading {
+  color: var(--cappuccino-dark) !important;
+  font-size: 18px !important;
+  /* text-decoration: underline; */
+  font-weight: bold !important;
+}
+
+/* -------- Legend styling -------- */
 /* Hide the field caption line ("ViolentPer1000") */
 .esri-legend__layer-caption {
   display: none !important;
@@ -220,6 +256,24 @@ body {
 
 .esri-legend__layer-row {
   margin: 4px 0;
+}
+
+.esri-legend.esri-widget {
+  border: 3px solid var(--cappuccino-red);
+}
+
+/* -------- PopUp styling -------- */
+.esri-popup__main-container {
+  border: 3px solid var(--cappuccino-red);
+}
+
+.esri-popup__button {
+  background-color: var(--cappuccino-red);
+  color: var(--cappuccino-cream);
+}
+.esri-popup__button:hover {
+  background-color: var(--cappuccino-dark);
+  color: var(--cappuccino-cream);
 }
 
 /* -------- Map UI buttons (Home + Zoom) -------- */

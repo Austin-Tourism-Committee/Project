@@ -17,15 +17,14 @@
   <!-- MAIN MAP APP (everything that belongs to the map/home view) -->
 <div id="mainApp">
   <div id="controls">
-    <h3>Texas Crime Change 2009 & 2019</h3>
-    <h4>Toggle Layers</h4>
+    <h4>Select A Year</h4>
     <div id="layerToggles"></div>
   </div>
 
 <!-- 2009 Buffer Panel -->
 <div id="bufferPanel2009">
-  <h4>2009 — Crime Buffer</h4>
-  <label>ViolentPer1000 ≥ <input id="vp2009" type="number" value="5"></label><br>
+  <h4>Crime Buffer: 2009</h4>
+  <label>Violent Crimes (per 1000) ≥<input id="vp2009" type="number" value="5"></label><br>
   <label>Distance (miles): <input id="dist2009" type="number" value="25"></label><br>
   <br>
   <button id="buffer2009Btn">Draw Buffers</button>
@@ -35,8 +34,8 @@
 
 <!-- 2019 Buffer Panel -->
 <div id="bufferPanel2019">
-  <h4>2019 — Crime Buffer</h4>
-  <label>ViolentPer1000 ≥ <input id="vp2019" type="number" value="5"></label><br>
+  <h4>Crime Buffer: 2019</h4>
+  <label>Violent Crimes (per 1000) ≥<input id="vp2019" type="number" value="5"></label><br>
   <label>Distance (miles): <input id="dist2019" type="number" value="25"></label><br>
   <br>
   <button id="buffer2019Btn">Draw Buffers</button>
@@ -55,7 +54,7 @@
 
 <!-- Query Panel: Allows attribute-based querying on 2019 violent crime data -->
 <div id="queryPanel">
-  <h4>2019 Crime Query</h4>
+  <h4>Crime Query: 2019</h4>
 
   <!-- Attribute selection dropdown -->
   <label>Attribute:</label>
@@ -231,8 +230,8 @@ const homeWidget = new Home({
     { name:"State Boundary", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/9" },
     { name:"Texas Cities 2009", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/8" },
     { name:"Texas Cities 2019", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/7" },
-    { name:"Violence Per 1000 People: 2009", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/2" },
-    { name:"Violence Per 1000 People: 2019", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/1" }
+    { name:"Violent Crime (Per 1000): 2009", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/2" },
+    { name:"Violent Crime (Per 1000): 2019", url:"https://services1.arcgis.com/M68M8H7oABBFs1Pf/arcgis/rest/services/Texas_Crime_Change_2009_2019_WFL1/FeatureServer/1" }
   ];
 
   const layerObjects = [];
@@ -285,9 +284,10 @@ const homeWidget = new Home({
   layerObjects[4].visible = false; // 2019 layer off by default
   const toggleDiv = dom.byId("layerToggles");
   const row = document.createElement("div"); //create div
-  //create radio boxes
+  //Create radio boxes
   row.innerHTML = `<input id="layerToggle_2009" type="radio" name="dateSwitchTest" checked><label for="layerToggle_2009">2009</label><input id="layerToggle_2019" type="radio" name="dateSwitchTest"><label for="layerToggle_2019">2019</label>`;
   toggleDiv.appendChild(row);
+  //Changes when clicked
   document.getElementById(`layerToggle_2009`).addEventListener("change", e => {
     layerObjects[3].visible = e.target.checked; //Turn 2009 layer on
     layerObjects[4].visible = !e.target.checked; //Turn 2019 layer off
