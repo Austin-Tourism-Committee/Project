@@ -185,6 +185,18 @@ body {
   color: var(--cappuccino-cream);
 }
 
+#buffer2009Btn:hover,
+#buffer2019Btn:hover,
+#clear2009Btn:hover,
+#clear2019Btn:hover,
+#runFast2009:hover,
+#runFast2019:hover,
+#clearFast2009Btn:hover,
+#clearFast2019Btn:hover,
+#doBtn:hover {
+  background-color: var(--cappuccino-dark);
+}
+
 /* -------- Legend styling -------- */
 
 /* Match legend panel to cappuccino UI */
