@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
         TEXAS VIOLENT CRIME: 2009 & 2019
       </div>
       <div class="ui-banner__subtitle">
-        Comparison of city-level violent crime rates and hot spot patterns across Texas
+        Comparison of city-level violent crime rates and buffers around high crime areas across Texas
       </div>
     </div>
 
