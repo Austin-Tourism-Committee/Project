@@ -33,14 +33,11 @@
     <label>Violent Crimes (per 1000) ≥<input id="vp2009" type="number" value="5"></label><br>
     <label>Distance (miles): <input id="dist2009" type="number" value="25"></label><br>
     <br>
-    <button id="buffer2009Btn">2009</button>
-    <button id="clear2009Btn">Clear</button>
+    <button id="createBufferBtn">Create Buffers</button>
+    <button id="clearBufferBtn">Clear Result</button>
     <br><br>
-    <button id="buffer2019Btn">2019</button>
-    <button id="clear2019Btn">Clear</button>
-    <br><br>
-    <button id="fastBufferBtn">Fast Buffer</button>
-    <button id="clearFastBufferBtn">Clear</button>
+    <button id="fastBufferBtn">Demo Buffers</button>
+    <button id="clearFastBufferBtn">Clear Result</button>
     <br><br>
   </div>
 
@@ -278,12 +275,13 @@ const homeWidget = new Home({
 
   /* TOGGLE SWITCH */
   layerObjects[4].visible = false; // 2019 layer off by default
+  // Create year variable. stores a integer(might be float) of the year for the active layer.
+  var year = 2009;
 
   /* BUFFER LAYERS */
-  const bufferLayer2009 = new GraphicsLayer();
-  const bufferLayer2019 = new GraphicsLayer();
+  const bufferLayerMain = new GraphicsLayer();
   const fastBufferLayer = new GraphicsLayer();
-  map.addMany([bufferLayer2009, bufferLayer2019, fastBufferLayer]);
+  map.addMany([bufferLayerMain, fastBufferLayer]);
 
   const city2009 = layerObjects.find(l=>l.title==="Texas Cities 2009");
   const city2019 = layerObjects.find(l=>l.title==="Texas Cities 2019");
@@ -301,21 +299,21 @@ const homeWidget = new Home({
   // Input: year
   // Output:
   function drawBuffer(year){
-    let cityLayer, bufferLayer, threshold, distance, printTarget;
+    let cityLayer, threshold, distance, printTarget;
     threshold = Number(dom.byId("vp2009").value);
     distance = Number(dom.byId("dist2009").value);
 
     // Determine which layer and text panel to use
     if(year===2009){
-      cityLayer = city2009; bufferLayer = bufferLayer2009;
+      cityLayer = city2009;
       // printTarget = 2009;
     } else {
-      cityLayer = city2019; bufferLayer = bufferLayer2019;
+      cityLayer = city2019;
       // printTarget = 2019;
     }
 
     // Clear old buffers
-    bufferLayer.removeAll();
+    bufferLayerMain.removeAll();
     // setPrint(printTarget, "Drawing buffers...");
 
     // Build query to find matching cities
@@ -334,7 +332,7 @@ const homeWidget = new Home({
       // For each city found, draw a buffer polygon
       res.features.forEach(f=>{
         const buf = geometryEngine.geodesicBuffer(f.geometry, distance, "miles");
-        bufferLayer.add(new Graphic({
+        bufferLayerMain.add(new Graphic({
           geometry: buf,
           symbol: {
             type: "simple-fill",
@@ -442,23 +440,16 @@ const homeWidget = new Home({
   // ---------------- EVENT LISTENERS ----------------
   // BUFFER BUTTON EVENT LISTENERS
   // Draw Buffer Buttons
-  // 2009 Draw Buffer Button
-  dom.byId("buffer2009Btn").addEventListener("click", ()=>drawBuffer(2009));
-  // 2019 Draw Buffer Button
-  dom.byId("buffer2019Btn").addEventListener("click", ()=>drawBuffer(2019));
+  // Draw Buffer Button
+  dom.byId("createBufferBtn").addEventListener("click", ()=>drawBuffer(year));
   // Fast Draw Buffer Button
   dom.byId("fastBufferBtn").addEventListener("click", drawFastBuffer);
 
   // Remove Buffer Buttons
-  // 2009 Remove Buffer Button
-  dom.byId("clear2009Btn").addEventListener("click", ()=>{
-    bufferLayer2009.removeAll();
+  // Remove Buffer Button
+  dom.byId("clearBufferBtn").addEventListener("click", ()=>{
+    bufferLayerMain.removeAll();
     // setPrint(2009,"Buffers Cleared");
-  });
-  // 2019 Remove Buffer Button
-  dom.byId("clear2019Btn").addEventListener("click", ()=>{
-    bufferLayer2019.removeAll();
-    // setPrint(2019,"Buffers Cleared");
   });
   // Remove Fast Buffer Button
   dom.byId("clearFastBufferBtn").addEventListener("click", ()=>{
@@ -479,10 +470,12 @@ const homeWidget = new Home({
   document.getElementById(`layerToggle_2009`).addEventListener("change", e => {
     layerObjects[3].visible = e.target.checked; //Turn 2009 layer on
     layerObjects[4].visible = !e.target.checked; //Turn 2019 layer off
+    year = 2009;
   });
   document.getElementById(`layerToggle_2019`).addEventListener("change", e => {
     layerObjects[4].visible = e.target.checked; //Turn 2019 layer on
     layerObjects[3].visible = !e.target.checked; //Turn 2009 layer off
+    year = 2019;
   });
 
   // ---------------- LEGEND SETUP ----------------

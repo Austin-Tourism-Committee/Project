@@ -148,10 +148,8 @@ body {
 }
 
 /* Panel Buttons */
-#buffer2009Btn,
-#buffer2019Btn,
-#clear2009Btn,
-#clear2019Btn,
+#createBufferBtn,
+#clearBufferBtn,
 #fastBufferBtn,
 #clearFastBufferBtn,
 #clearFast2019Btn,
@@ -161,10 +159,8 @@ body {
   color: var(--cappuccino-cream);
 }
 
-#buffer2009Btn:hover,
-#buffer2019Btn:hover,
-#clear2009Btn:hover,
-#clear2019Btn:hover,
+#createBufferBtn:hover,
+#clearBufferBtn:hover,
 #fastBufferBtn:hover,
 #clearFastBufferBtn:hover,
 #clearFast2019Btn:hover,
