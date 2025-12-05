@@ -26,8 +26,9 @@ body {
 }
 
 #viewDiv {
-  height: calc(100% - 80px);
-  margin-top: 80px;
+  height: 100%;
+  /* height: calc(100% - 80px); */
+  /* margin-top: 80px; */
 }
 
 /* ---------------- Overhead Banner ---------------- */

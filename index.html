@@ -266,13 +266,13 @@ const homeWidget = new Home({
     layerObjects.push(fl);
   });
 
-  // --- Texas extent on load ---
+  // --- Texas view extent on load ---
   view.when(function () {
     const stateLayer = layerObjects[0]; // "State Boundary" layer
     if (!stateLayer) return;
 
     stateLayer.when().then(function () {
-      view.goTo(stateLayer.fullExtent.expand(0.8));
+      view.goTo(stateLayer.fullExtent.expand(0.9));
     });
   });
 
