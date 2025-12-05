@@ -21,51 +21,52 @@
     <div id="layerToggles"></div>
   </div>
 
-<!-- Buffer Panel -->
-<div id="bufferPanel2009">
-  <h4>Crime Buffer</h4>
-  <label>Violent Crimes (per 1000) ≥<input id="vp2009" type="number" value="5"></label><br>
-  <label>Distance (miles): <input id="dist2009" type="number" value="25"></label><br>
-  <br>
-  <button id="buffer2009Btn">2009</button>
-  <button id="clear2009Btn">Clear</button>
-  <br><br>
-  <button id="buffer2019Btn">2019</button>
-  <button id="clear2019Btn">Clear</button>
-  <br><br>
-  <button id="fastBufferBtn">Fast Buffer</button>
-  <button id="clearFastBufferBtn">Clear</button>
-  <!-- <p id="print2009" style="font-size:12px;margin-top:6px"></p> -->
-</div>
+<div id="mainPanel">
+  <!-- Buffer Panel -->
+  <div id="bufferPanel2009">
+    <h4>Crime Buffer</h4>
+    <label>Violent Crimes (per 1000) ≥<input id="vp2009" type="number" value="5"></label><br>
+    <label>Distance (miles): <input id="dist2009" type="number" value="25"></label><br>
+    <br>
+    <button id="buffer2009Btn">2009</button>
+    <button id="clear2009Btn">Clear</button>
+    <br><br>
+    <button id="buffer2019Btn">2019</button>
+    <button id="clear2019Btn">Clear</button>
+    <br><br>
+    <button id="fastBufferBtn">Fast Buffer</button>
+    <button id="clearFastBufferBtn">Clear</button>
+    <!-- <p id="print2009" style="font-size:12px;margin-top:6px"></p> -->
+  </div>
 
-<!-- Query Panel -->
-<div id="queryPanel">
-  <h4>Crime Query: 2019</h4>
-
-  <!-- Attribute selection dropdown -->
-  <label>Attribute:</label>
-  <select id="attSelect">
-    <option value="ViolentPer1000">Violent Crime Per 1000</option>
-    <option value="ViolentInt">Total Violent Crime</option>
-  </select>
-  <br><br>
-
-  <!-- Logical operator selection -->
-  <label>Operator:</label>
-  <select id="signSelect">
-    <option value=">">is greater than</option>
-    <option value="<">is less than</option>
-    <option value="=">is equal to</option>
-  </select>
-  <br><br>
-
-  <label>Value:</label>
-  <input type="number" id="valSelect" value="5">
-  <br><br>
-
-  <button id="queryBtn">Run Query</button>
-  <button id="clearQueryResultBtn">Clear Result</button>
-  <p id="printResults"></p>
+  <!-- Query Panel -->
+  <div id="queryPanel">
+    <br><br>
+    <h4>Crime Query</h4>
+    <!-- Attribute selection dropdown -->
+      <label>Attribute:</label>
+      <select id="attSelect">
+        <option value="ViolentPer1000">Violent Crime Per 1000</option>
+        <option value="ViolentInt">Total Violent Crime</option>
+      </select>
+      <br><br>
+      <!-- Logical operator selection -->
+      <label>Operator:</label>
+      <select id="signSelect">
+        <option value=">">is greater than</option>
+        <option value="<">is less than</option>
+        <option value="=">is equal to</option>
+      </select>
+      <br><br>
+      <!-- Number input box   -->
+      <label>Value:</label>
+      <input type="number" id="valSelect" value="5">
+      <br><br>
+      <!-- Query button -->
+      <button id="queryBtn">Run Query</button>
+      <button id="clearQueryResultBtn">Clear Result</button>
+      <p id="printResults"></p>
+  </div>
 </div>
 
 <!-- Map display div -->
@@ -421,6 +422,7 @@ const homeWidget = new Home({
 
     // Execute query
     qTask.execute(qParams).then(function(res){
+      // Fail check
       if(res.features.length === 0){
         dom.byId("printResults").innerHTML = "No Results Found";
         return;

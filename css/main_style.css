@@ -118,8 +118,7 @@ body {
 /* ---------------- Floating Panels ---------------- */
 
 #controls,
-#bufferPanel2009,
-#queryPanel {
+#mainPanel {
   position: fixed;
   background: var(--cappuccino-cream);
   padding: 10px;
@@ -138,16 +137,16 @@ body {
   left: 10px;
 }
 
-#bufferPanel2009 {
+#mainPanel {
   top: 120px;
   right: 10px;
 }
 
-#queryPanel {
+/* #queryPanel {
   right: 10px;
   bottom: 30px;
   top: auto;
-}
+} */
 
 #controls h3,
 #controls h4,
@@ -468,9 +467,9 @@ input::-webkit-inner-spin-button {
 
   #bufferPanel2009 { top: 96px; }
 
-  #queryPanel {
+  /* #queryPanel {
     right: 10px;
     bottom: 90px;
     top: auto;
-  }
+  } */
 }
