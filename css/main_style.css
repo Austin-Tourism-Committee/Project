@@ -119,7 +119,6 @@ body {
 
 #controls,
 #bufferPanel2009,
-#bufferPanel2019,
 #quickBuffer2009,
 #queryPanel {
   position: fixed;
@@ -145,11 +144,6 @@ body {
   right: 10px;
 }
 
-#bufferPanel2019 {
-  top: 340px;
-  right: 10px;
-}
-
 #quickBuffer2009 {
   top: 560px;
   right: 10px;
@@ -164,7 +158,6 @@ body {
 #controls h3,
 #controls h4,
 #bufferPanel2009 h4,
-#bufferPanel2019 h4,
 #quickBuffer2009 h4,
 #queryPanel h4 {
   margin-top: 0;
@@ -481,7 +474,6 @@ input::-webkit-inner-spin-button {
   }
 
   #bufferPanel2009 { top: 96px; }
-  #bufferPanel2019 { top: 280px; }
   #quickBuffer2009 { top: 464px; }
 
   #queryPanel {

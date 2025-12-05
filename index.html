@@ -21,35 +21,21 @@
     <div id="layerToggles"></div>
   </div>
 
-<!-- 2009 Buffer Panel -->
+<!-- Buffer Panel -->
 <div id="bufferPanel2009">
-  <h4>Crime Buffer: 2009</h4>
+  <h4>Crime Buffer</h4>
   <label>Violent Crimes (per 1000) ≥<input id="vp2009" type="number" value="5"></label><br>
   <label>Distance (miles): <input id="dist2009" type="number" value="25"></label><br>
   <br>
-  <button id="buffer2009Btn">Draw Buffers</button>
-  <button id="clear2009Btn">Clear Buffers</button>
-  <p id="print2009" style="font-size:12px;margin-top:6px"></p>
-</div>
-
-<!-- 2019 Buffer Panel -->
-<div id="bufferPanel2019">
-  <h4>Crime Buffer: 2019</h4>
-  <label>Violent Crimes (per 1000) ≥<input id="vp2019" type="number" value="5"></label><br>
-  <label>Distance (miles): <input id="dist2019" type="number" value="25"></label><br>
-  <br>
-  <button id="buffer2019Btn">Draw Buffers</button>
-  <button id="clear2019Btn">Clear Buffers</button>
-  <p id="print2019" style="font-size:12px;margin-top:6px"></p>
-</div>
-
-<!-- Fast Buffer Panel -->
-<div id="quickBuffer2009">
-  <h4>Fast Buffer (5 Cities)</h4>
-  <button id="fastBufferBtn">Run Fast Buffer</button>
+  <button id="buffer2009Btn">2009</button>
+  <button id="clear2009Btn">Clear</button>
   <br><br>
-  <button id="clearFastBufferBtn">Clear Fast Buffers</button>
-  <p id="fastBufferText" style="font-size:12px;margin-top:6px"></p>
+  <button id="buffer2019Btn">2019</button>
+  <button id="clear2019Btn">Clear</button>
+  <br><br>
+  <button id="fastBufferBtn">Fast Buffer</button>
+  <button id="clearFastBufferBtn">Clear</button>
+  <!-- <p id="print2009" style="font-size:12px;margin-top:6px"></p> -->
 </div>
 
 <!-- Query Panel -->
@@ -280,7 +266,7 @@ const homeWidget = new Home({
     if (!stateLayer) return;
 
     stateLayer.when().then(function () {
-      view.goTo(stateLayer.fullExtent.expand(0.79));
+      view.goTo(stateLayer.fullExtent.expand(0.8));
     });
   });
 
@@ -311,9 +297,12 @@ const homeWidget = new Home({
   const city2009 = layerObjects.find(l=>l.title==="Texas Cities 2009");
   const city2019 = layerObjects.find(l=>l.title==="Texas Cities 2019");
 
-  function setPrint(year,text){
-    dom.byId(year===2009 ? "print2009" : "print2019").innerText = text;
-  }
+  // setPrint FUNCTION
+  // Input: year, text
+  // Output: text to
+  // function setPrint(year,text){
+  //   dom.byId(year===2009 ? "print2009" : "print2019").innerText = text;
+  // }
 
   // ---------------- BUFFER ----------------
   // BUFFER FUNCTION
@@ -322,23 +311,21 @@ const homeWidget = new Home({
   // Output:
   function drawBuffer(year){
     let cityLayer, bufferLayer, threshold, distance, printTarget;
+    threshold = Number(dom.byId("vp2009").value);
+    distance = Number(dom.byId("dist2009").value);
 
     // Determine which layer and text panel to use
     if(year===2009){
       cityLayer = city2009; bufferLayer = bufferLayer2009;
-      threshold = Number(dom.byId("vp2009").value);
-      distance = Number(dom.byId("dist2009").value);
-      printTarget = 2009;
+      // printTarget = 2009;
     } else {
       cityLayer = city2019; bufferLayer = bufferLayer2019;
-      threshold = Number(dom.byId("vp2019").value);
-      distance = Number(dom.byId("dist2019").value);
-      printTarget = 2019;
+      // printTarget = 2019;
     }
 
     // Clear old buffers
     bufferLayer.removeAll();
-    setPrint(printTarget, "Drawing buffers...");
+    // setPrint(printTarget, "Drawing buffers...");
 
     // Build query to find matching cities
     const q = cityLayer.createQuery();
@@ -349,7 +336,7 @@ const homeWidget = new Home({
     // Run the query
     cityLayer.queryFeatures(q).then(res => {
       if(!res.features.length){
-        setPrint(printTarget, "No high-crime cities found.");
+        // setPrint(printTarget, "No high-crime cities found.");
         return;
       }
 
@@ -366,7 +353,7 @@ const homeWidget = new Home({
         }));
       });
 
-      setPrint(printTarget, `Buffers drawn around ${res.features.length} cities.`);
+      // setPrint(printTarget, `Buffers drawn around ${res.features.length} cities.`);
     });
   }
 
@@ -474,17 +461,17 @@ const homeWidget = new Home({
   // 2009 Remove Buffer Button
   dom.byId("clear2009Btn").addEventListener("click", ()=>{
     bufferLayer2009.removeAll();
-    setPrint(2009,"Buffers Cleared");
+    // setPrint(2009,"Buffers Cleared");
   });
   // 2019 Remove Buffer Button
   dom.byId("clear2019Btn").addEventListener("click", ()=>{
     bufferLayer2019.removeAll();
-    setPrint(2019,"Buffers Cleared");
+    // setPrint(2019,"Buffers Cleared");
   });
   // Remove Fast Buffer Button
   dom.byId("clearFastBufferBtn").addEventListener("click", ()=>{
     fastBufferLayer.removeAll();
-    dom.byId("fastBufferText").innerText = "Fast Buffers Cleared";
+    // dom.byId("fastBufferText").innerText = "Fast Buffers Cleared";
   });
 
   // QUERY BUTTON EVENT LISTENERS
@@ -493,7 +480,7 @@ const homeWidget = new Home({
   // Remove Query Button
   dom.byId("clearQueryResultBtn").addEventListener("click", ()=>{
     resultsLayer.removeAll();
-    dom.byId("fastBufferText").innerText = "Query Results Cleared";
+    // dom.byId("fastBufferText").innerText = "Query Results Cleared";
   });
 
 
