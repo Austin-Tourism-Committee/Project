@@ -179,11 +179,11 @@ body {
 #buffer2019Btn,
 #clear2009Btn,
 #clear2019Btn,
-#runFast2009,
-#runFast2019,
-#clearFast2009Btn,
+#fastBufferBtn,
+#clearFastBufferBtn,
 #clearFast2019Btn,
-#doBtn {
+#queryBtn,
+#clearQueryResultBtn {
   background-color: var(--cappuccino-red);
   color: var(--cappuccino-cream);
 }
@@ -192,11 +192,11 @@ body {
 #buffer2019Btn:hover,
 #clear2009Btn:hover,
 #clear2019Btn:hover,
-#runFast2009:hover,
-#runFast2019:hover,
-#clearFast2009Btn:hover,
+#fastBufferBtn:hover,
+#clearFastBufferBtn:hover,
 #clearFast2019Btn:hover,
-#doBtn:hover {
+#queryBtn:hover,
+#clearQueryResultBtn:hover {
   background-color: var(--cappuccino-dark);
 }
 
@@ -305,7 +305,7 @@ input::-webkit-inner-spin-button {
 #footer {
   position: fixed;  /* overlay on top of the map */
   bottom: 4px;
-  left: 50%;
+  left: 60%;
   transform: translateX(-50%);
   background-color: rgba(255, 244, 230, 0.8);
   padding: 2px 6px;

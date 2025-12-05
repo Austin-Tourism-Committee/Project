@@ -46,13 +46,13 @@
 <!-- Fast Buffer Panel -->
 <div id="quickBuffer2009">
   <h4>Fast Buffer (5 Cities)</h4>
-  <button id="runFast2009">Run Fast Buffer</button>
+  <button id="fastBufferBtn">Run Fast Buffer</button>
   <br><br>
-  <button id="clearFast2009Btn">Clear Fast Buffers</button>
-  <p id="fast2009Text" style="font-size:12px;margin-top:6px"></p>
+  <button id="clearFastBufferBtn">Clear Fast Buffers</button>
+  <p id="fastBufferText" style="font-size:12px;margin-top:6px"></p>
 </div>
 
-<!-- Query Panel: Allows attribute-based querying on 2019 violent crime data -->
+<!-- Query Panel -->
 <div id="queryPanel">
   <h4>Crime Query: 2019</h4>
 
@@ -77,7 +77,8 @@
   <input type="number" id="valSelect" value="5">
   <br><br>
 
-  <button id="doBtn">Run Query</button>
+  <button id="queryBtn">Run Query</button>
+  <button id="clearQueryResultBtn">Clear Result</button>
   <p id="printResults"></p>
 </div>
 
@@ -140,6 +141,7 @@
     <h2>About The Team</h2>
 
 <!-- Person card layout repeated for each team member -->
+  <!-- Parker card -->
   <div class="about-person">
     <img src="images/Parker.jpg" alt="Parker Cook">
     <div class="about-text">
@@ -152,6 +154,7 @@
     </div>
   </div>
 
+  <!-- Marissa card -->
   <div class="about-person">
     <img src="images/Marissa.jpg" alt="Marissa Lucke">
     <div class="about-text">
@@ -164,6 +167,7 @@
     </div>
   </div>
 
+  <!-- Kai card -->
   <div class="about-person">
     <img src="images/Kai.jpg" alt="Kai McDonald">
     <div class="about-text">
@@ -176,6 +180,7 @@
     </div>
   </div>
 
+  <!-- Seth card -->
   <div class="about-person">
     <img src="images/Seth.jpg" alt="Seth Collinsworth">
     <div class="about-text">
@@ -275,11 +280,11 @@ const homeWidget = new Home({
     if (!stateLayer) return;
 
     stateLayer.when().then(function () {
-      view.goTo(stateLayer.fullExtent.expand(0.80));
+      view.goTo(stateLayer.fullExtent.expand(0.79));
     });
   });
 
-  /* TOGGLE LIST */
+  /* TOGGLE SWITCH */
   // Creates radio boxes to switch between 2009 and 2019
   layerObjects[4].visible = false; // 2019 layer off by default
   const toggleDiv = dom.byId("layerToggles");
@@ -300,8 +305,8 @@ const homeWidget = new Home({
   /* BUFFER LAYERS */
   const bufferLayer2009 = new GraphicsLayer();
   const bufferLayer2019 = new GraphicsLayer();
-  const fastBufferLayer2009 = new GraphicsLayer();
-  map.addMany([bufferLayer2009, bufferLayer2019, fastBufferLayer2009]);
+  const fastBufferLayer = new GraphicsLayer();
+  map.addMany([bufferLayer2009, bufferLayer2019, fastBufferLayer]);
 
   const city2009 = layerObjects.find(l=>l.title==="Texas Cities 2009");
   const city2019 = layerObjects.find(l=>l.title==="Texas Cities 2019");
@@ -310,7 +315,11 @@ const homeWidget = new Home({
     dom.byId(year===2009 ? "print2009" : "print2019").innerText = text;
   }
 
-  // BUFFER FUNCTION — CREATES BUFFER AROUND CITIES ABOVE A CRIME THRESHOLD
+  // ---------------- BUFFER ----------------
+  // BUFFER FUNCTION
+  // Creates Buffer Features around cities above a crime threshold. Based on city2009 layer.
+  // Input: year
+  // Output:
   function drawBuffer(year){
     let cityLayer, bufferLayer, threshold, distance, printTarget;
 
@@ -361,10 +370,13 @@ const homeWidget = new Home({
     });
   }
 
-  // FAST BUFFER FUNCTION — QUICK TEST USING ONLY FIRST 5 FEATURES
-  function drawFastBuffer2009() {
-    fastBufferLayer2009.removeAll();
-    dom.byId("fast2009Text").innerText = "Running fast query...";
+  // FAST BUFFER FUNCTION
+  // Creates 5 Buffer Features. Based on city2009 layer.
+  // Input:
+  // Output:
+  function drawFastBuffer() {
+    fastBufferLayer.removeAll();
+    dom.byId("fastBufferText").innerText = "Running Fast Query";
 
     const q = city2009.createQuery();
     q.where = "1=1";
@@ -374,13 +386,13 @@ const homeWidget = new Home({
 
     city2009.queryFeatures(q).then(res => {
       if(!res.features.length){
-        dom.byId("fast2009Text").innerText = "No features found.";
+        dom.byId("fastBufferText").innerText = "No Features Found";
         return;
       }
 
       res.features.forEach(f=>{
         const buf = geometryEngine.geodesicBuffer(f.geometry, 25, "miles");
-        fastBufferLayer2009.add(new Graphic({
+        fastBufferLayer.add(new Graphic({
           geometry: buf,
           symbol: {
             type:"simple-fill",
@@ -390,31 +402,11 @@ const homeWidget = new Home({
         }));
       });
 
-      dom.byId("fast2009Text").innerText = "Fast buffer complete.";
+      dom.byId("fastBufferText").innerText = "Fast Buffer Complete";
     });
   }
 
-  // BUFFER BUTTON EVENT LISTENERS
-  dom.byId("buffer2009Btn").addEventListener("click", ()=>drawBuffer(2009));
-  dom.byId("buffer2019Btn").addEventListener("click", ()=>drawBuffer(2019));
-
-  dom.byId("clear2009Btn").addEventListener("click", ()=>{
-    bufferLayer2009.removeAll();
-    setPrint(2009,"Cleared.");
-  });
-
-  dom.byId("clear2019Btn").addEventListener("click", ()=>{
-    bufferLayer2019.removeAll();
-    setPrint(2019,"Cleared.");
-  });
-
-  dom.byId("runFast2009").addEventListener("click", drawFastBuffer2009);
-  dom.byId("clearFast2009Btn").addEventListener("click", ()=>{
-    fastBufferLayer2009.removeAll();
-    dom.byId("fast2009Text").innerText = "Fast buffers cleared.";
-  });
-
-  // ATTRIBUTE QUERY SETUP
+  // ---------------- ATTRIBUTE QUERY ----------------
   const layerUrl = layersInfo[4].url; // Cities Violent Per 1000 2019
   const resultsLayer = new GraphicsLayer();
   map.add(resultsLayer);
@@ -426,7 +418,10 @@ const homeWidget = new Home({
     outFields: ["*"]
   });
 
-  // RUN ATTRIBUTE QUERY
+  // ATTRIBUTE QUERY RUN FUNCTION
+  // Runs attribute-based querying on 2019 violent crime layer.
+  // Input:
+  // Output:
   function doQuery(){
     resultsLayer.removeAll();
 
@@ -440,7 +435,7 @@ const homeWidget = new Home({
     // Execute query
     qTask.execute(qParams).then(function(res){
       if(res.features.length === 0){
-        dom.byId("printResults").innerHTML = "No results found!";
+        dom.byId("printResults").innerHTML = "No Results Found";
         return;
       }
 
@@ -460,31 +455,67 @@ const homeWidget = new Home({
         view.popup.open({ features: res.features });
       });
 
-      dom.byId("printResults").innerHTML = `${res.features.length} results found!`;
+      dom.byId("printResults").innerHTML = `${res.features.length} Results Found`;
     })
-    .catch(err => console.error("Query failed:", err));
+    .catch(err => console.error("Query Failed:", err));
   }
 
-  // Run query when button clicked
-  dom.byId("doBtn").addEventListener("click", doQuery);
+  // ---------------- EVENT LISTENERS ----------------
+  // BUFFER BUTTON EVENT LISTENERS
+  // Draw Buffer Buttons
+  // 2009 Draw Buffer Button
+  dom.byId("buffer2009Btn").addEventListener("click", ()=>drawBuffer(2009));
+  // 2019 Draw Buffer Button
+  dom.byId("buffer2019Btn").addEventListener("click", ()=>drawBuffer(2019));
+  // Fast Draw Buffer Button
+  dom.byId("fastBufferBtn").addEventListener("click", drawFastBuffer);
 
-  // LEGEND SETUP
-  // Disable 'State Boudary' in legend
+  // Remove Buffer Buttons
+  // 2009 Remove Buffer Button
+  dom.byId("clear2009Btn").addEventListener("click", ()=>{
+    bufferLayer2009.removeAll();
+    setPrint(2009,"Buffers Cleared");
+  });
+  // 2019 Remove Buffer Button
+  dom.byId("clear2019Btn").addEventListener("click", ()=>{
+    bufferLayer2019.removeAll();
+    setPrint(2019,"Buffers Cleared");
+  });
+  // Remove Fast Buffer Button
+  dom.byId("clearFastBufferBtn").addEventListener("click", ()=>{
+    fastBufferLayer.removeAll();
+    dom.byId("fastBufferText").innerText = "Fast Buffers Cleared";
+  });
+
+  // QUERY BUTTON EVENT LISTENERS
+  // Run Query Button
+  dom.byId("queryBtn").addEventListener("click", doQuery);
+  // Remove Query Button
+  dom.byId("clearQueryResultBtn").addEventListener("click", ()=>{
+    resultsLayer.removeAll();
+    dom.byId("fastBufferText").innerText = "Query Results Cleared";
+  });
+
+
+  // ---------------- LEGEND SETUP ----------------
+  // Disable 'State Boudary' layer in legend
   layerObjects[0].legendEnabled = false;
-  // Disable 'Texas Cities 2009' in legend
+  // Disable 'Texas Cities 2009' layer in legend
   layerObjects[1].legendEnabled = false;
-  // Disable 'Texas Cities 2019' in legend
+  // Disable 'Texas Cities 2019' layer in legend
   layerObjects[2].legendEnabled = false;
+  // Create legend
   let legend = new Legend({
     view: view,
   });
 
-
-  // HOME WIDGET SETUP
+  // ---------------- HOME WIDGET SETUP ----------------
+  // Create home Button
   const home = new Home({
     view: view
   });
 
+  // ------------- UI ELEMENTS ARRANGEMENT --------------
 // Add legend in bottom left
 view.ui.add(legend, "bottom-left");
 // Move zoom button bottom left
