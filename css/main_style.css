@@ -142,15 +142,9 @@ body {
   right: 10px;
 }
 
-/* #queryPanel {
-  right: 10px;
-  bottom: 30px;
-  top: auto;
-} */
-
 #controls h3,
 #controls h4,
-#bufferPanel2009 h4,
+#bufferPanel h4,
 #queryPanel h4 {
   margin-top: 0;
   margin-bottom: 8px;
@@ -208,6 +202,10 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+#bufferPanel {
+  border-bottom: .5px solid var(--cappuccino-red);
 }
 
 /* -------- Widget styling -------- */
@@ -465,11 +463,5 @@ input::-webkit-inner-spin-button {
     font-size: 13px;
   }
 
-  #bufferPanel2009 { top: 96px; }
-
-  /* #queryPanel {
-    right: 10px;
-    bottom: 90px;
-    top: auto;
-  } */
+  #bufferPanel { top: 96px; }
 }
