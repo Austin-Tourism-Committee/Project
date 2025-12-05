@@ -117,7 +117,6 @@ body {
 
 /* ---------------- Floating Panels ---------------- */
 
-#controls,
 #mainPanel {
   position: fixed;
   background: var(--cappuccino-cream);
@@ -132,18 +131,12 @@ body {
   border: 3px solid var(--cappuccino-red);
 }
 
-#controls {
-  top: 120px;
-  left: 10px;
-}
-
 #mainPanel {
   top: 120px;
   right: 10px;
 }
 
-#controls h3,
-#controls h4,
+#yearSelectPanel h4,
 #bufferPanel h4,
 #queryPanel h4 {
   margin-top: 0;
@@ -204,7 +197,8 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-#bufferPanel {
+#bufferPanel,
+#yearSelectPanel {
   border-bottom: .5px solid var(--cappuccino-red);
 }
 

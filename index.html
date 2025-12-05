@@ -16,14 +16,19 @@
 
   <!-- MAIN MAP APP (everything that belongs to the map/home view) -->
 <div id="mainApp">
-  <div id="controls">
+<div id="mainPanel">
+  <!-- Select A Year Panel -->
+  <div id="yearSelectPanel">
     <h4>Select A Year</h4>
-    <div id="layerToggles"></div>
+    <!-- Creates radio boxes to switch between 2009 and 2019 -->
+    <input id="layerToggle_2009" type="radio" name="dateSwitchTest" checked><label for="layerToggle_2009">2009</label>
+    <input id="layerToggle_2019" type="radio" name="dateSwitchTest"><label for="layerToggle_2019">2019</label>
+    <br><br>
   </div>
 
-<div id="mainPanel">
   <!-- Buffer Panel -->
   <div id="bufferPanel">
+    <br>
     <h4>Crime Buffer</h4>
     <label>Violent Crimes (per 1000) ≥<input id="vp2009" type="number" value="5"></label><br>
     <label>Distance (miles): <input id="dist2009" type="number" value="25"></label><br>
@@ -272,22 +277,7 @@ const homeWidget = new Home({
   });
 
   /* TOGGLE SWITCH */
-  // Creates radio boxes to switch between 2009 and 2019
   layerObjects[4].visible = false; // 2019 layer off by default
-  const toggleDiv = dom.byId("layerToggles");
-  const row = document.createElement("div"); //create div
-  //Create radio boxes
-  row.innerHTML = `<input id="layerToggle_2009" type="radio" name="dateSwitchTest" checked><label for="layerToggle_2009">2009</label><input id="layerToggle_2019" type="radio" name="dateSwitchTest"><label for="layerToggle_2019">2019</label>`;
-  toggleDiv.appendChild(row);
-  //Changes when clicked
-  document.getElementById(`layerToggle_2009`).addEventListener("change", e => {
-    layerObjects[3].visible = e.target.checked; //Turn 2009 layer on
-    layerObjects[4].visible = !e.target.checked; //Turn 2019 layer off
-  });
-  document.getElementById(`layerToggle_2019`).addEventListener("change", e => {
-    layerObjects[4].visible = e.target.checked; //Turn 2019 layer on
-    layerObjects[3].visible = !e.target.checked; //Turn 2009 layer off
-  });
 
   /* BUFFER LAYERS */
   const bufferLayer2009 = new GraphicsLayer();
@@ -485,6 +475,15 @@ const homeWidget = new Home({
     // dom.byId("fastBufferText").innerText = "Query Results Cleared";
   });
 
+  // YEAR SELECT EVENT LISTENERS
+  document.getElementById(`layerToggle_2009`).addEventListener("change", e => {
+    layerObjects[3].visible = e.target.checked; //Turn 2009 layer on
+    layerObjects[4].visible = !e.target.checked; //Turn 2019 layer off
+  });
+  document.getElementById(`layerToggle_2019`).addEventListener("change", e => {
+    layerObjects[4].visible = e.target.checked; //Turn 2019 layer on
+    layerObjects[3].visible = !e.target.checked; //Turn 2009 layer off
+  });
 
   // ---------------- LEGEND SETUP ----------------
   // Disable 'State Boudary' layer in legend
